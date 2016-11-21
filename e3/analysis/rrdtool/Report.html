@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ report_name }}</title>
+</head>
+<body>
+    <div>
+        <p align="center">{{ report_name }}</p>
+        <table border="0px" width="auto" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th width="10%"></th>
+                    {% for node in nodes %}
+                        <th>{{ node }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for metric in top %}
+                <tr>
+                    <td>{{ metric }}</td>
+                    {% for node in nodes %}
+                    {% if data[metric] and node in data[metric] %}
+                        <td><img src="{{ thread }}/{{ stage }}/{{ node }}/{{node}}-{{metric}}.png"></td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            {% for metric in bottom %}
+            {% if metric not in top %}
+            <tr>
+                <td>{{ metric }}</td>
+                {% for node in nodes %}
+                {% if data[metric] and node in data[metric] %}
+                <td><img src="{{ thread }}/{{ stage }}/{{ node }}/{{node}}-{{metric}}.png"></td>
+                {% else %}
+                <td></td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

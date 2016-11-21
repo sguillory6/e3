@@ -1,0 +1,3 @@
+[submodule "e3/generator"]
+	path = e3/generator
+	url = git@bitbucket.org:atlassian/test-data-generator-backend.git

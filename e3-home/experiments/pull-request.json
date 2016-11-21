@@ -1,0 +1,42 @@
+{
+  "duration": 1200000,
+  "workload": "pull-request",
+
+  "threads": [
+    {
+      "name": "3-nodes-5-workers",
+      "instance": {
+        "name": "3-node",
+        "version": "4.11.0",
+        "snapshot": "bitbucket-e3-small",
+        "template": "BitbucketDataCenterLDAP",
+        "properties": [
+          "plugin.bitbucket-git.throttle.ref.advertisement=false",
+          "plugin.bitbucket-scm-cache.upload-pack.enabled=false",
+          "throttle.resource.scm-hosting.strategy=adaptive",
+          "throttle.resource.scm-hosting.adaptive.limit.min=8",
+          "throttle.resource.scm-hosting.adaptive.limit.max=100",
+          "throttle.resource.scm-hosting.adaptive.interval=2",
+          "throttle.resource.scm-hosting.adaptive.growth.max=1.0",
+          "throttle.resource.scm-hosting.adaptive.target.cpu=0.8"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "3",
+          "ClusterNodeMax": "3"
+        }
+      },
+      "worker": {
+        "name": "worker-cluster-1",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "5"
+        }
+      },
+      "stages": [
+        {
+          "clients": 10
+        }
+      ]
+    }
+  ]
+}

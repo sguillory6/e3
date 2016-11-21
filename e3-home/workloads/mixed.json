@@ -1,0 +1,62 @@
+[
+  {
+    "script": "scm.GitCloneOverSsh",
+    "description": "GitCloneOverSsh",
+    "scale": 1.0,
+    "weight": 0.4
+  },
+  {
+    "script": "scm.GitLsRemoteSsh",
+    "description": "GitLsRemoteSsh",
+    "scale": 1.0,
+    "weight": 0.1
+  },
+  {
+    "script": "web.Dashboard",
+    "description": "Dashboard",
+    "scale": 1.0,
+    "weight": 0.1
+  },
+  {
+    "script": "web.ViewPullRequest",
+    "description": "ViewPullRequest",
+    "scale": 1.0,
+    "weight": 0.1
+  },
+  {
+    "script": "scm.PushChangesSsh",
+    "description": "PushChangesSsh",
+    "scale": 1.0,
+    "weight": 0.05
+  },
+  {
+    "script": "web.Audit",
+    "description": "ListAuditEvents",
+    "scale": 1.00,
+    "weight": 0.05
+  },
+  {
+    "script": "web.BrowseProjectsAndRepositories",
+    "description": "BrowseProjectsAndRepositories",
+    "scale": 1.0,
+    "weight": 0.05
+  },
+  {
+    "script": "web.PullRequestWorkflow",
+    "description": "PullRequestWorkflow",
+    "scale": 1.0,
+    "weight": 0.05
+  },
+  {
+    "script": "web.ListUsers",
+    "description": "ListUsers",
+    "scale": 1.0,
+    "weight": 0.05
+  },
+  {
+    "script": "scm.GitLsRemoteHttp",
+    "description": "GitLsRemoteHttp",
+    "scale": 1.0,
+    "weight": 0.05
+  }
+]

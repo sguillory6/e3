@@ -1,0 +1,8 @@
+[
+  {
+    "script": "persona.DeveloperUsingPullRequests",
+    "description": "DeveloperUsingPullRequests",
+    "scale": 1,
+    "weight": 1
+  }
+]

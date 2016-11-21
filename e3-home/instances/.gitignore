@@ -1,0 +1,10 @@
+bitbucket-data-center-*.json
+bitbucket-data-center-*.pem
+bitbucket-server-*.json
+bitbucket-server-*.pem
+network-*.json
+network-*.pem
+worker-*.json
+worker-*.pem
+generate-dataset-*.json
+generate-dataset-*.pem

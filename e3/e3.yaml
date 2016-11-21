@@ -1,0 +1,39 @@
+#
+# YAML config file for E3
+#
+e3:
+  #
+  # Configure the E3 home folder where all data is stored
+  #
+  home: '../e3-home'
+  #
+  # Configure AWS authentication mechanism
+  # - external = call external application or script
+  #
+  aws_auth_type: 'external'
+  #
+  # Configure the external program to use for authentication
+  #
+  aws_auth_external:
+    class: 'provisioning.AtlassianAwsSecurity'
+    config:
+      script: '~/awscli-saml-auth/setawstoken.sh -r 1'
+      tokens: '~/awscli-saml-auth/aws_tokens'
+    valid_for: 3600 # in seconds
+  #
+  # Which logging.config file to use
+  #
+  logging: 'logging.conf'
+  #
+  # S3 bucket for CF templates
+  #
+  s3_bucket: 'atlassian-software/templates/bitbucket'
+  #
+  # Folder for CF templates. If this is set, templates will be looked up locally
+  # first, and if they exist, they will be used over any templates stored in `s3_bucket`
+  #
+  #template_dir: '../templates'
+  #
+  # S3 bucket containing Elasticsearch Snapshots
+  #
+  es_s3_bucket: 'bitbucket-server-e3'
