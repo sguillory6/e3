@@ -7,7 +7,7 @@
       "name": "1-node",
       "instance": {
         "name": "1-node",
-        "version": "4.11.0-m3",
+        "version": "4.11.0",
         "snapshot": "bitbucket-e3-small",
         "template": "BitbucketDataCenterLDAP",
         "properties": [

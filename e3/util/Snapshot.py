@@ -15,11 +15,16 @@ class Snapshot:
     """
     Connects to a Bitbucket Server instance and generates a json file representing the data on the instance
     """
-    def __init__(self, url, key_file, username, password, distribution, distribution_factor, description, name):
+    def __init__(self, url, key_file, username, password, max_project, max_repo, max_branch, max_user, distribution,
+                 distribution_factor, description, name):
         self.url = url
         self.key_file = key_file
         self.username = username
         self.password = password
+        self.max_project = int(max_project)
+        self.max_repo = int(max_repo)
+        self.max_branch = int(max_branch)
+        self.max_user = int(max_user)
         self.distribution = distribution
         self.distribution_factor = float(distribution_factor)
         self.description = description
@@ -39,16 +44,17 @@ class Snapshot:
         start_time = datetime.datetime.now().replace(microsecond=0)
         self.generate_snapshot()
         self.weight_snapshot()
+        users = self.generate_users()
         snapshot = {"name": self.name,
                     "description": self.description,
                     "projects": self.projects,
-                    "users": self.generate_users()}
+                    "users": users}
         with open(self.output_file, 'w') as jsonFile:
             json.dump(snapshot, jsonFile, indent=4, sort_keys=True)
 
-        print "Snapshot %s written to %s with %d repositories with a weighting distribution of %s and" \
+        print "Snapshot %s written to %s with %d repositories, %d users with a weighting distribution of %s and" \
               " a distribution factor of %d it took %s" % (
-                  self.name, self.output_file, self.generated_repo_count, self.distribution,
+                  self.name, self.output_file, self.generated_repo_count, len(users), self.distribution,
                   self.distribution_factor, datetime.datetime.now().replace(microsecond=0) - start_time)
 
     def generate_users(self):
@@ -86,20 +92,23 @@ class Snapshot:
             return ""
 
     def generate_snapshot(self):
-        projects = [project['key'] for project in requests.get('%s/rest/api/1.0/projects?limit=1000' % self.url,
+        print("Generating snapshot with %s max projects, %s max repositories and %s max branches."
+              % (self.max_project, self.max_repo, self.max_branch))
+        projects = [project['key'] for project in requests.get('%s/rest/api/1.0/projects?limit=%s'
+                                                               % (self.url, self.max_project),
                                                                auth=self.credentials).json()['values']]
         if len(projects) < 1:
             raise Exception("Could not find any projects on instance.")
 
         for i, project in enumerate(projects):
             repos = [repo['slug'] for repo in
-                     requests.get('%s/rest/api/1.0/projects/%s/repos?limit=1000' % (self.url, project),
+                     requests.get('%s/rest/api/1.0/projects/%s/repos?limit=%s' % (self.url, project, self.max_repo),
                                   auth=self.credentials).json()['values']]
             self.projects.append({"name": project, "repos": []})
             for k, repo in enumerate(repos):
                 branches = []
-                request = requests.get('%s/rest/api/1.0/projects/%s/repos/%s/branches?limit=1000' %
-                                       (self.url, project, repo), auth=self.credentials)
+                request = requests.get('%s/rest/api/1.0/projects/%s/repos/%s/branches?limit=%s' %
+                                       (self.url, project, repo, self.max_branch), auth=self.credentials)
                 if "values" in request.json():
                     for branch in request.json()['values']:
                         branches.append(branch)
@@ -150,13 +159,19 @@ class Snapshot:
 @click.option('--key-file', help="File containing the keys of the users on the instance", default='Default')
 @click.option('--username', help="Bitbucket admin user", default="admin")
 @click.option('--password', help="User password", default="admin")
+@click.option('--max-project', help="Number of projects to include in the snapshot", default="100")
+@click.option('--max-repo', help="Number of repositories to include in the snapshot", default="100")
+@click.option('--max-branch', help="Maximum number of branches to include for each repository", default="5")
+@click.option('--max-user', help="Number of users to include in snapshot", default="500")
 @click.option('--distribution', help="Weight distribution type", default="equal")
 @click.option('--distribution-factor', help="Used by some distribution types to control the shape of the distribution",
               default="1")
 @click.option('--description', help="Snapshot description", default="Default")
 @click.option('--name', help="Snapshot name", default="Default")
-def command(url, key_file, username, password, distribution, distribution_factor, description, name):
-    Snapshot(url, key_file, username, password, distribution, distribution_factor, description, name).generate()
+def command(url, key_file, username, password, max_branch, max_repo, max_project, max_user, distribution,
+            distribution_factor, description, name):
+    Snapshot(url, key_file, username, password, max_project, max_repo, max_branch, max_user, distribution,
+             distribution_factor, description, name).generate()
 
 
 if __name__ == '__main__':
