@@ -92,7 +92,7 @@ class Snapshot:
             return ""
 
     def generate_snapshot(self):
-        print("Generating snapshot with %s max projects, %s max repositories and %s max branches."
+        print("Generating snapshot with %s max projects, max %s repositories in each, max %s branches per repo."
               % (self.max_project, self.max_repo, self.max_branch))
         projects = [project['key'] for project in requests.get('%s/rest/api/1.0/projects?limit=%s'
                                                                % (self.url, self.max_project),
@@ -112,8 +112,10 @@ class Snapshot:
                 if "values" in request.json():
                     for branch in request.json()['values']:
                         branches.append(branch)
-                self.projects[i]["repos"].append({"name": repo, "weight": 0, "branches": branches})
-                self.generated_repo_count += 1
+                # Only add repo if there are branches
+                if len(branches) > 0:
+                    self.projects[i]["repos"].append({"name": repo, "weight": 0, "branches": branches})
+                    self.generated_repo_count += 1
 
     def weight_snapshot(self):
         if self.distribution == 'equal':
