@@ -53,6 +53,8 @@ class E3:
     def get_runs(self):
         runs_found = []
         run_dir = self.get_run_dir()
+        if not os.path.exists(run_dir):
+            return runs_found
         for pos_run in os.listdir(run_dir):
             pos_run_dir = os.path.join(run_dir, pos_run)
             if os.path.isdir(pos_run_dir):
