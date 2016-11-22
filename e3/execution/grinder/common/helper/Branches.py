@@ -12,7 +12,7 @@ def rest_get_default_branch(script, project_key, repo_slug):
     :return: the default branch
     :rtype: Branch
     """
-    j = script.rest("GET", "/rest/api/1.0/projects/%s/repos/%s/branches/default" % (project, repository))
+    j = script.rest("GET", "/rest/api/1.0/projects/%s/repos/%s/branches/default" % (project_key, repo_slug))
     if is_http_ok():
         return Branch.from_json(j)
 
