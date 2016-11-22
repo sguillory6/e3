@@ -14,7 +14,7 @@ from common.CodeEditor import CodeEditor
 from common.RandomWords import RandomWords
 from common.RepositoryCache import RepositoryCache
 from common.wrapper.User import User
-from common.helper.Branches import rest_get_branches, get_branch_by_id, get_default_branch
+from common.helper.Branches import rest_get_branches, get_branch_by_id, rest_get_default_branch
 from common.helper.Diff import view_diff
 from common.helper.PullRequests import create_pull_request, rest_get_pr_changes, rest_get_pr_diff, \
     merge_pr, get_pr_list, rest_get_pr_by_id, decline_pr
@@ -92,7 +92,7 @@ class PullRequestWorkflow(TestScript):
         feature_branch = self.create_branch_edit_files_push_to_repo(me, working_dir)
         branches = rest_get_branches(self, project_key, repo_slug)
         from_branch = get_branch_by_id(branches, feature_branch)
-        to_branch = get_default_branch(branches)
+        to_branch = rest_get_default_branch(self, project_key, repo_slug)
         return from_branch, to_branch
 
     def checkout_master_and_pull(self, me, working_dir):
