@@ -1,5 +1,6 @@
 import os
 import shutil
+import base64
 from tempfile import mkdtemp
 
 
@@ -12,7 +13,7 @@ class User(object):
         self.password = password
         self.ssh_public_key = ssh_public_key
         self.ssh_private_key = ssh_private_key
-        self.home_dir = os.path.join(e3_temp_dir, self.username)
+        self.home_dir = os.path.join(e3_temp_dir, base64.urlsafe_b64encode(self.username))
         self.ssh_key_path = "%s/.ssh/id_rsa" % self.home_dir
 
     def __repr__(self):
