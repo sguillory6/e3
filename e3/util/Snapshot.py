@@ -58,27 +58,34 @@ class Snapshot:
                   self.distribution_factor, datetime.datetime.now().replace(microsecond=0) - start_time)
 
     def generate_users(self):
+        num_ssh_users = 0
+        max_ssh_users = self.max_user / 2
+
+        print "Generating maximum of %s users" % max_ssh_users
         keymap = open(os.path.join(self.e3_home, "keys", self.key_file + ".json"))
         keys = json.loads(keymap.read())
 
-        prefilter_usernames = [username['name'] for username in requests.get('%s/rest/api/1.0/users?limit=%s' % (self.url, 1000), auth=self.credentials).json()['values']]
-
+        prefilter_usernames = [username['name'] for username in requests.get('%s/rest/api/1.0/users?limit=%s' % (self.url, self.max_user), auth=self.credentials).json()['values']]
         usernames = filter(lambda x: not x.startswith("admin"), prefilter_usernames)
 
         users = []
         for username in usernames:
-            # TODO Username and password are the same probably ok for systems with just test data
-            public_key = self.user_public_key(username)
-            pks = public_key.split(" ")
-            if len(pks) > 1:
-                user = {'username': username}
-                lookup = pks[0] + " " + pks[1]
-                for key in keys['key_pairs']:
-                    if key['public_key'] == lookup:
-                        user['public_key'] = public_key
-                        user['private_key'] = key['private_key']
-            else:
+            if num_ssh_users >= max_ssh_users:
+                # LDAP dataset defaults password to 'password'
                 user = {'username': username, 'password': 'password'}
+            else:
+                public_key = self.user_public_key(username)
+                pks = public_key.split(" ")
+                if len(pks) > 1:
+                    user = {'username': username}
+                    lookup = pks[0] + " " + pks[1]
+                    for key in keys['key_pairs']:
+                        if key['public_key'] == lookup:
+                            user['public_key'] = public_key
+                            user['private_key'] = key['private_key']
+                            num_ssh_users += 1
+                else:
+                    user = {'username': username, 'password': 'password'}
             users.append(user)
 
         return users

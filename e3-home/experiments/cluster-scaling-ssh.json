@@ -1,6 +1,6 @@
 {
   "duration": 600000,
-  "workload": "ssh-clone",
+  "workload": "mixed",
 
   "threads": [
     {
