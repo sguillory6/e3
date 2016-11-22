@@ -49,7 +49,9 @@ class TestDataProvider:
         for user in self.snapshot['users']:
             if 'password' in user:
                 self.http_auth_users.append(user)
-            elif 'private_key' in user:
+            else:
+                self.logger.warn("Could not find any basic auth credentials for user %s" % user)
+            if 'private_key' in user:
                 key_file_name = self.key_file_path(user['username'])
                 if not os.path.exists(key_file_name):
                     try:
@@ -63,7 +65,7 @@ class TestDataProvider:
                 # and assume the other thread got things right
                 self.ssh_auth_users.append(user)
             else:
-                self.logger.warn("Could not find any credentials for user %s" % user)
+                self.logger.warn("Could not find any SSH key credentials for user %s" % user)
 
     @staticmethod
     def key_file_path(username):

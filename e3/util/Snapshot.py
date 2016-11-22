@@ -52,16 +52,13 @@ class Snapshot:
         with open(self.output_file, 'w') as jsonFile:
             json.dump(snapshot, jsonFile, indent=4, sort_keys=True)
 
-        print "Snapshot %s written to %s with %d repositories, %d users with a weighting distribution of %s and" \
+        print "Snapshot %s written to %s with %d repositories, %d users, a weighting distribution of %s and" \
               " a distribution factor of %d it took %s" % (
                   self.name, self.output_file, self.generated_repo_count, len(users), self.distribution,
                   self.distribution_factor, datetime.datetime.now().replace(microsecond=0) - start_time)
 
     def generate_users(self):
-        num_ssh_users = 0
-        max_ssh_users = self.max_user / 2
-
-        print "Generating maximum of %s users" % max_ssh_users
+        print "Generating maximum of %s users" % self.max_user
         keymap = open(os.path.join(self.e3_home, "keys", self.key_file + ".json"))
         keys = json.loads(keymap.read())
 
@@ -70,23 +67,20 @@ class Snapshot:
 
         users = []
         for username in usernames:
-            if num_ssh_users >= max_ssh_users:
-                # LDAP dataset defaults password to 'password'
-                user = {'username': username, 'password': 'password'}
-            else:
-                public_key = self.user_public_key(username)
-                pks = public_key.split(" ")
-                if len(pks) > 1:
-                    user = {'username': username}
-                    lookup = pks[0] + " " + pks[1]
-                    for key in keys['key_pairs']:
-                        if key['public_key'] == lookup:
-                            user['public_key'] = public_key
-                            user['private_key'] = key['private_key']
-                            num_ssh_users += 1
-                else:
-                    user = {'username': username, 'password': 'password'}
-            users.append(user)
+            public_key = self.user_public_key(username)
+            pks = public_key.split(" ")
+
+            # Only add user if they have a SSH key
+            if len(pks) > 1:
+                user = {'username': username}
+                lookup = pks[0] + " " + pks[1]
+                for key in keys['key_pairs']:
+                    if key['public_key'] == lookup:
+                        user['public_key'] = public_key
+                        user['private_key'] = key['private_key']
+                        # LDAP dataset user passwords default to "password"
+                        user['password'] = 'password'
+                        users.append(user)
 
         return users
 
