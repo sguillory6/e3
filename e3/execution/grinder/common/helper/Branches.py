@@ -12,8 +12,9 @@ def rest_get_default_branch(script, project_key, repo_slug):
     :return: the default branch
     :rtype: Branch
     """
-    branches = rest_get_branches(script, project_key, repo_slug)
-    return get_default_branch(branches)
+    j = script.rest("GET", "/rest/api/1.0/projects/%s/repos/%s/branches/default" % (project, repository))
+    if is_http_ok():
+        return Branch.from_json(j)
 
 
 def rest_get_branches(script, project, repository):
@@ -57,14 +58,3 @@ def get_branch_by_id(branches, branch_id):
     """
     possible_match = filter(lambda r: r.identifier == branch_id or r.display_identifier == branch_id, branches)
     return possible_match[0] if possible_match else None
-
-
-def get_default_branch(branches):
-    """
-    Gets the first found default branch in a list of branches
-    :param branches: a list of Branch instances
-    :return: The first default branch found
-    :rtype: Branch
-    """
-    possible_default = filter(lambda r: r.is_default, branches)
-    return possible_default[0] if possible_default else None

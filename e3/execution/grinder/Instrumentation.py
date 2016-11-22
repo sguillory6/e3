@@ -10,7 +10,7 @@ from common.helper import PullRequests
 from common.helper import Repositories
 
 # methods that must be excluded from instrumentation
-FUNC_BLACKLIST = ["get_default_branch", "get_branch_by_id"]
+FUNC_BLACKLIST = ["get_branch_by_id"]
 
 
 def get_functions(module):
