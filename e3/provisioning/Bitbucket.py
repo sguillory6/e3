@@ -12,6 +12,11 @@ class Bitbucket(Template):
     def __init__(self, aws, e3_properties, stack_config):
         if "version" in e3_properties:
             stack_config["CloudFormation"]["BitbucketVersion"] = e3_properties["version"]
+
+        if len(stack_config["CloudFormation"]["BitbucketProperties"]) > 0:
+            stack_config["CloudFormation"]["BitbucketProperties"] += ","
+        stack_config["CloudFormation"]["BitbucketProperties"] += "jmx.enabled=true"
+
         self._admin_password = e3_properties['admin_password']
         Template.__init__(self, aws, e3_properties, stack_config)
 
