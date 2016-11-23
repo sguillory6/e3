@@ -7,7 +7,7 @@
       "instance": {
         "name": "2-node",
         "version": "4.11.0",
-        "snapshot": "bitbucket-e3-small",
+        "snapshot": "bitbucket-e3-medium",
         "template": "BitbucketDataCenterLDAP",
         "properties": ["db.schema.lock.maxWait=600"],
         "parameters": {

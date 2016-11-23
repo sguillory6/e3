@@ -126,6 +126,7 @@ class ProvisionStack:
             Parameters=template.generate_parameters(),
             StackName=stack_name,
             Tags=template.generate_tags(),
+            DisableRollback=True,
             **template_kwargs)
 
         template.wait_stack_status()

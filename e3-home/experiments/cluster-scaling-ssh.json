@@ -1,13 +1,13 @@
 {
   "duration": 600000,
-  "workload": "ssh-clone",
+  "workload": "mixed",
 
   "threads": [
     {
       "name": "1-node",
       "instance": {
         "name": "1-node",
-        "version": "4.11.0-m3",
+        "version": "4.11.0",
         "snapshot": "bitbucket-e3-small",
         "template": "BitbucketDataCenterLDAP",
         "properties": [
@@ -55,7 +55,7 @@
       "instance": {
         "name": "3-node",
         "version": "4.11.0-m3",
-        "snapshot": "bitbucket-e3-small",,
+        "snapshot": "bitbucket-e3-small",
         "template": "BitbucketDataCenterLDAP",
         "properties": [
           "plugin.bitbucket-git.throttle.ref.advertisement=false",

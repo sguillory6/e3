@@ -23,7 +23,7 @@ from provisioning.ProvisionStack import ProvisionStack
               help='Optional properties in the form key=value,... to configure the new instance')
 @click.option('--templates', default='BitbucketServer,WorkerCluster',
               help='Comma separated list of CloudFormation template(s) to provision')
-@click.option('--snapshot', default='e3-medium',
+@click.option('--snapshot', default='bitbucket-e3-small',
               help='The name of the data snapshot for each instance')
 @click.option('--version', default='4.11.0')
 @click.option('--public/--internal', default=True,
