@@ -44,6 +44,9 @@ class PullRequestWorkflow(TestScript):
 
                     # create pr
                     from_branch, to_branch = self.create_feature_branch(me, project_key, repo_slug, working_dir)
+                    if from_branch is None or to_branch is None:
+                        self.warn("Target or Source branch does not exist. Repository: %s/%s", project_key, repo_slug)
+                        return
                     title = self.words.random_sentence(3)
                     description = self.words.random_sentence(10)
                     pr_id = self.create_pr(project_key, repo_slug, from_branch, to_branch, title, description)
