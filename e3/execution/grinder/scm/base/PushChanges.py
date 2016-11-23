@@ -40,13 +40,13 @@ class PushChanges(TestScript):
     def clone(self, repo_name, branch):
         self.run_git([
             "clone", "-b", branch,
-            self.protocol_helper.make_url(repo_name, self.test_data.choose_http_user_at_random()),
+            self.protocol_helper.make_url(repo_name),
             self.repo_dir_pattern % ('%s/work/' % self.root, repo_name, self.get_thread_number())
-        ], self.runner, env=self.protocol_helper.environment(self.test_data.choose_ssh_user_at_random()))
+        ], self.runner, env=self.protocol_helper.environment())
 
     def push(self, cwd, branch_name):
         self.run_git(["push", "-f", "--set-upstream", "origin", branch_name], self.runner, cwd=cwd,
-                     env=self.protocol_helper.environment(self.test_data.choose_ssh_user_at_random()))
+                     env=self.protocol_helper.environment())
 
     def commit(self, cwd, message):
         self.run_git(["commit", "-m", message], self.runner, cwd=cwd)

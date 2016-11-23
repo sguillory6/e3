@@ -47,29 +47,15 @@ class TestDataProvider:
         self.http_auth_users = []
         self.ssh_auth_users = []
         for user in self.snapshot['users']:
+            if 'private_key' not in user and 'password' not in user:
+                self.logger.warn("Could not find any credentials for user %s" % user)
+                continue
+
             if 'password' in user:
                 self.http_auth_users.append(user)
-            else:
-                self.logger.warn("Could not find any basic auth credentials for user %s" % user)
-            if 'private_key' in user:
-                key_file_name = self.key_file_path(user['username'])
-                if not os.path.exists(key_file_name):
-                    try:
-                        key_file = open(key_file_name, 'w')
-                        key_file.write(user["private_key"])
-                        os.chmod(key_file_name, 0400)
-                        key_file.close()
-                    except Exception as e:
-                        self.logger.warn("There was a problem setting up a key for ssh authentication: %s" % e)
-                # There is a race between different threads that can cause errors here, in case of error ignore
-                # and assume the other thread got things right
-                self.ssh_auth_users.append(user)
-            else:
-                self.logger.warn("Could not find any SSH key credentials for user %s" % user)
 
-    @staticmethod
-    def key_file_path(username):
-        return "%s/e3/data/keys/%s" % (System.getProperty("root"), username)
+            if 'private_key' in user:
+                self.ssh_auth_users.append(user)
 
     def random_project_repo_tuple(self):
         weight = random.random() * self.total_repo_weight
@@ -92,7 +78,7 @@ class TestDataProvider:
         return random.choice(self.http_auth_users)
 
     def choose_ssh_user_at_random(self):
-        return (random.choice(self.ssh_auth_users))['username']
+        return random.choice(self.ssh_auth_users)
 
     def sum_of_repo_weights(self):
         total_weight = 0.0
