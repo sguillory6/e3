@@ -1,7 +1,7 @@
 from common.wrapper.User import User
 
 
-class ProtocolHelper:
+class ProtocolHelper(object):
     def __init__(self, test_data, user_dict):
         self.base_url = test_data.base_url
         self.user = User.from_dict(user_dict)
