@@ -54,7 +54,7 @@
       "name": "3-node",
       "instance": {
         "name": "3-node",
-        "version": "4.11.0-m3",
+        "version": "4.11.0",
         "snapshot": "bitbucket-e3-small",
         "template": "BitbucketDataCenterLDAP",
         "properties": [
@@ -101,7 +101,7 @@
       "name": "6-node",
       "instance": {
         "name": "6-node",
-        "version": "4.11.0-m3",
+        "version": "4.11.0",
         "snapshot": "bitbucket-e3-small",
         "template": "BitbucketDataCenterLDAP",
         "properties": [
@@ -123,7 +123,7 @@
         "name": "worker-cluster-6",
         "template": "WorkerCluster",
         "parameters": {
-          "ClusterSize": "4"
+          "ClusterSize": "12"
         }
       },
       "stages": [
@@ -148,7 +148,7 @@
       "name": "10-node",
       "instance": {
         "name": "10-node",
-        "version": "4.11.0-m3",
+        "version": "4.11.0",
         "snapshot": "bitbucket-e3-small",
         "template": "BitbucketDataCenterLDAP",
         "properties": [
