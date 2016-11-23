@@ -16,23 +16,6 @@ class RepositoryCache:
         self.cache_lock = FileLock(base_dir, "cache")
         self.CACHE_DB = os.path.join(self.base_dir, "cache.json")
 
-    def is_cached(self, repo_name):
-        """
-        Checks if a given repository is cached
-        :param repo_name: The name or url of the repository to check
-        :type repo_name: str
-        :return: True if cached else False
-        :rtype: bool
-        """
-        with self.cache_lock:
-            if not os.path.exists(self.CACHE_DB):
-                return False
-            cache = load_json(self.CACHE_DB)
-            for entry in cache["repositories"]:
-                if entry["name"] == repo_name:
-                    return True
-            return False
-
     def list(self):
         """
         Get the names for cached repositories
