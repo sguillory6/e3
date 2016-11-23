@@ -15,16 +15,16 @@ class User(object):
         self.ssh_private_key = ssh_private_key
         self.home_dir = os.path.join(e3_temp_dir, base64.urlsafe_b64encode(self.username))
         self.ssh_key_path = "%s/.ssh/id_rsa" % self.home_dir
+        self.create_home()
 
     def __repr__(self):
         return "User(username=%s)" % self.username
 
     def __enter__(self):
-        self.create_home()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.delete_home()
+        pass
 
     def __getitem__(self, item):
         """
