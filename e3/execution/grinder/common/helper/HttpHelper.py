@@ -11,8 +11,8 @@ class HttpHelper(ProtocolHelper):
     def make_url(self, repo):
         url = self.base_url
         url_parts = url.split("://")
-        username = urllib.urlencode(self.user['username'])
-        password = urllib.urlencode(self.user['password'])
+        username = urllib.quote(self.user['username'])
+        password = urllib.quote(self.user['password'])
         url_parts[1] = username + ":" + password + "@" + url_parts[1]
         url = "://".join(url_parts)
         return "%s/scm/%s.git" % (url, repo)

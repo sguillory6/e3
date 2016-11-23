@@ -14,8 +14,8 @@ class HttpDirectHelper(ProtocolHelper):
             url += '7990'
 
         url_parts = url.split("://")
-        username = urllib.urlencode(self.user['username'])
-        password = urllib.urlencode(self.user['password'])
+        username = urllib.quote(self.user['username'])
+        password = urllib.quote(self.user['password'])
         url_parts[1] = username + ":" + password + "@" + url_parts[1]
         url = "://".join(url_parts)
 
