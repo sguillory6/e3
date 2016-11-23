@@ -1,3 +1,4 @@
+import urllib
 from TestDataProvider import TestDataProvider
 from common.helper.ProtocolHelper import ProtocolHelper
 
@@ -13,7 +14,9 @@ class HttpDirectHelper(ProtocolHelper):
             url += '7990'
 
         url_parts = url.split("://")
-        url_parts[1] = self.user['username'] + ":" + self.user['password'] + "@" + url_parts[1]
+        username = urllib.urlencode(self.user['username'])
+        password = urllib.urlencode(self.user['password'])
+        url_parts[1] = username + ":" + password + "@" + url_parts[1]
         url = "://".join(url_parts)
 
         return "%s/scm/%s.git" % (url, repo)
