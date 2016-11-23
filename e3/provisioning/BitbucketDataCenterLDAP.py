@@ -134,4 +134,4 @@ class BitbucketDataCenterLDAP(BitbucketDataCenter):
             r = requests.post(add_key_url, auth=("admin", self._admin_password), params=params, data=data,
                               headers={"Content-Type": "application/json"})
             if r.status_code > 300:
-                self._log.debug("Failed to add SSH key to user '%s' %s" % username)
+                self._log.debug("Failed to add SSH key to user '%s'" % username)

@@ -3,9 +3,8 @@ import logging.config
 import os
 import subprocess
 from datetime import datetime, timedelta
-from pprint import pprint
 
-from botocore.credentials import CredentialProvider, Credentials, RefreshableCredentials
+from botocore.credentials import CredentialProvider, RefreshableCredentials
 from dateutil.tz import tzlocal
 
 from common.E3 import e3
