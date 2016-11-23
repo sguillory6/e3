@@ -24,7 +24,7 @@ class PullRequestWorkflow(TestScript):
     def __init__(self, number, args):
         super(PullRequestWorkflow, self).__init__(number, args)
         # Construct the Repository cache
-        self.cache = RepositoryCache(os.path.join(self.root, "repo_cache"))
+        self.cache = RepositoryCache(os.path.join(self.e3_temp_dir, "repo_cache"))
         # Construct the random words generator
         self.words = RandomWords()
         instrument()
