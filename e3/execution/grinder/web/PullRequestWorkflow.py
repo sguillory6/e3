@@ -156,8 +156,7 @@ class PullRequestWorkflow(TestScript):
             # We don't, so get a temp dir and clone it and put it in the cache
             tmp_clone = self.cache.get_temp_dir()
             if self.run_git(["clone", clone_url, tmp_clone], env=me.get_env()) == 0:
-                self.cache.put(clone_url, tmp_clone)
-                return self.cache.get(clone_url)
+                return self.cache.put(clone_url, tmp_clone)
             else:
                 raise IOError("Unable to cache repository: %s" % clone_url)
         # Get the chosen test repository from the cache
