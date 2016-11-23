@@ -1,5 +1,5 @@
 import os
-import shutil
+from exceptions import OSError
 import base64
 from tempfile import mkdtemp
 
@@ -58,25 +58,26 @@ class User(object):
         }
 
     def create_home(self):
-        if not os.path.exists(self.home_dir):
-            os.makedirs(self.home_dir, mode=0o755)
+        try:
+            if not os.path.exists(self.home_dir):
+                os.makedirs(self.home_dir, mode=0o755)
 
-            key_path = os.path.dirname(self.ssh_key_path)
-            if not os.path.exists(key_path):
-                os.makedirs(key_path, mode=0o700)
+                key_path = os.path.dirname(self.ssh_key_path)
+                if not os.path.exists(key_path):
+                    os.makedirs(key_path, mode=0o700)
 
-                if self.ssh_public_key and self.ssh_private_key:
-                    if not os.path.exists(self.ssh_key_path):
-                        with open(self.ssh_key_path, "w") as key_file:
-                            key_file.write(self.ssh_private_key)
-                        os.chmod(self.ssh_key_path, 0o600)
+                    if self.ssh_public_key and self.ssh_private_key:
+                        if not os.path.exists(self.ssh_key_path):
+                            with open(self.ssh_key_path, "w") as key_file:
+                                key_file.write(self.ssh_private_key)
+                            os.chmod(self.ssh_key_path, 0o600)
+        except OSError:
+            # There is a race condition here when many threads attempt to create the home directory for the same user.
+            # Ignore it and assume one of the other threads got it right.
+            return
 
     def create_temp_dir(self):
         return mkdtemp(dir=self.home_dir)
-
-    def delete_home(self):
-        if os.path.exists(self.home_dir):
-            shutil.rmtree(self.home_dir, ignore_errors=True)
 
     def configure_netrc(self, hostname):
         if not os.path.exists(self.home_dir):
