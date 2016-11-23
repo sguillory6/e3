@@ -154,15 +154,16 @@ class PullRequestWorkflow(TestScript):
 
     def get_from_cache(self, me, clone_url):
         # Check if we have a cached copy of the external repository
-        if not self.cache.is_cached(clone_url):
-            # We don't so get a temp dir and clone it and put it in the cache
+        cached_copy = self.cache.get(clone_url)
+        if not cached_copy:
+            # We don't, so get a temp dir and clone it and put it in the cache
             tmp_clone = self.cache.get_temp_dir()
             if self.run_git(["clone", clone_url, tmp_clone], env=me.get_env()) == 0:
-                self.cache.put(clone_url, tmp_clone)
+                return self.cache.put(clone_url, tmp_clone)
             else:
                 raise IOError("Unable to cache repository: %s" % clone_url)
         # Get the chosen test repository from the cache
-        return self.cache.get(clone_url)
+        return cached_copy
 
     def choose_working_repository(self):
         # Choose a random repo to operate on
