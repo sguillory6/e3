@@ -1,8 +1,7 @@
+import base64
 import os
+import shutil
 from tempfile import mkdtemp
-
-from FileLock import FileLock
-from utils import load_json, save_json
 
 
 class RepositoryCache:
@@ -13,42 +12,19 @@ class RepositoryCache:
         self.base_dir = base_dir
         if not os.path.exists(self.base_dir):
             os.makedirs(self.base_dir)
-        self.cache_lock = FileLock(base_dir, "cache")
-        self.CACHE_DB = os.path.join(self.base_dir, "cache.json")
 
-    def list(self):
-        """
-        Get the names for cached repositories
-        :return: repositories or None
-        :rtype: list(str)
-        """
-        with self.cache_lock:
-            if not os.path.exists(self.CACHE_DB):
-                return []
-            cache = load_json(self.CACHE_DB)
-            return map(lambda entry: entry["name"], cache["repositories"])
-
-    def get(self, repo_name):
+    def get(self, repository_name):
         """
         Gets a repository from the cache
-        :param repo_name: The name or url of the repository to get
-        :type repo_name: str
+        :param repository_name: The name or url of the repository to get
+        :type repository_name: str
         :return: The cached repository or None
         :rtype: str
         """
-        with self.cache_lock:
-            if not os.path.exists(self.CACHE_DB):
-                return None
-            found = None
-            cache = load_json(self.CACHE_DB)
-            for repo in cache["repositories"]:
-                if repo["name"] == repo_name:
-                    found = repo
-                    break
-            if found:
-                return found["directory"]
-
-            return found
+        encoded_name = base64.urlsafe_b64encode(repository_name)
+        maybe_cached = os.path.join(self.base_dir, encoded_name)
+        if os.path.exists(maybe_cached):
+            return maybe_cached
 
     def put(self, repository_name, location):
         """
@@ -64,22 +40,18 @@ class RepositoryCache:
         if not os.path.abspath(location).startswith(os.path.abspath(self.base_dir)):
             raise ValueError("The temp folder is not a sub folder of the base folder")
 
-        with self.cache_lock:
-            if not os.path.exists(self.CACHE_DB):
-                cache = {"repositories": []}
+        encoded_name = base64.urlsafe_b64encode(repository_name)
+        dest_dir = os.path.join(self.base_dir, encoded_name)
+
+        try:
+            os.rename(location, dest_dir)
+        except OSError as ex:
+            if "Directory not empty" in ex:
+                shutil.rmtree(location)
             else:
-                cache = load_json(self.CACHE_DB)
+                raise
 
-            repo_dir = os.path.abspath(location)
-
-            cache["repositories"].append({
-                "name": repository_name,
-                "directory": repo_dir
-            })
-
-            save_json(self.CACHE_DB, cache)
-
-            return repo_dir
+        return dest_dir
 
     def get_temp_dir(self):
         """
