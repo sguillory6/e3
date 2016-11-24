@@ -38,7 +38,7 @@ class Bitbucket(Template):
 
     def wait_bitbucket_start(self, stack_name):
         status_url = self.get_stack_output(stack_name, 'URL') + '/status'
-        return Utils.poll_url(status_url, 3600, lambda response: response.text == '{"state":"RUNNING"}')
+        return Utils.poll_url(status_url, 900, lambda response: response.text == '{"state":"RUNNING"}')
 
     def post_with_security_info(self, path, data):
         url = self.get_stack_output(self._stack_config["StackName"], 'URL') + path

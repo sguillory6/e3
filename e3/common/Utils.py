@@ -72,7 +72,7 @@ def open_with_external_tool(resources_to_open):
                         print("Output images: %s" % resource_to_open)
 
 
-def poll_url(url, max_poll_time, success_callback):
+def poll_url(url, max_poll_time_seconds, success_callback):
     log = logging.getLogger("util")
     start_time = now()
     log.info("Polling url: %s" % url)
@@ -82,16 +82,14 @@ def poll_url(url, max_poll_time, success_callback):
             response = requests.get(url, timeout=60)
             success = success_callback(response)
             log.debug(".")
-
             if success:
-                log.info("Achieved desired response from url %s in %s seconds", url,
-                         datetime.datetime.now().replace(microsecond=0) - start_time)
+                log.info("Achieved desired response from url %s in %s seconds", url, now() - start_time)
                 return True
             time.sleep(15)
         except (ConnectTimeout, ConnectionError):
             pass
         finally:
-            if (now() - start_time).seconds > max_poll_time:
+            if (now() - start_time).seconds > max_poll_time_seconds:
                 log.warn("Timed out polling for response from %s", url)
                 return False
 
