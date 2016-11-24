@@ -21,8 +21,7 @@ class ListPullRequests(TestScript):
         success = 0
         if login(self, user):
             repo_under_test = choose_repository_at_random(self, choose_project_at_random(self))
-            proj_key, repo_slug = repo_under_test.split("/")
-            rest_get_pr_list(self, proj_key, repo_slug)
+            rest_get_pr_list(self, repo_under_test.project_key, repo_under_test.slug)
             if is_http_ok():
                 success += 1
 

@@ -65,15 +65,17 @@ if os.path.exists(work_dir):
 
 
 def choose_job():
-    process_count_per_agent = float(grinder.getProperties().get("grinder.processes", 1))
-    thread_count_per_process = float(grinder.getProperties().get("grinder.threads", 1))
+    process_count_per_agent = grinder.getProperties().getDouble("grinder.processes", 1.0)
+    thread_count_per_process = grinder.getProperties().getDouble("grinder.threads", 1.0)
     agent_count = float(System.getProperty("agentCount"))
 
     process_number_on_agent = float(grinder.getProcessNumber() - grinder.getFirstProcessNumber())
     thread_number_in_process = float(grinder.getThreadNumber())
     agent_number = float(grinder.getAgentNumber())
 
-    client_number = agent_number + agent_count * (process_number_on_agent + thread_number_in_process * process_count_per_agent)
+    client_number = agent_number + agent_count * (
+        process_number_on_agent + thread_number_in_process * process_count_per_agent
+    )
     total_clients = agent_count * process_count_per_agent * thread_count_per_process
     # The + 0.5 is to round to nearest if the calculation would otherwise lie near a boundary.
     weight = (client_number + 0.5) / total_clients
@@ -103,4 +105,11 @@ class TestRunner(object):
         self.testRunner = create_test_runner(job_number, job_data)
 
     def __call__(self):
-        self.testRunner()
+        try:
+            self.testRunner()
+        except Exception as ex:
+            # Ensure that if an exception is raised and NOT handled in the TestScript, we mark the test as failed
+            grinder.getStatistics().getForLastTest().success = False
+            grinder.getLogger().error("Script '%s' failed due to exception: %s", type(self.testRunner), ex)
+            # Re-raise the exception to grinder
+            raise
