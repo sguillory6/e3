@@ -1511,20 +1511,6 @@
                     ], 
                     "name": "likebutton-203", 
                     "weight": 0.009433962264150943
-                }, 
-                {
-                    "branches": [
-                        {
-                            "displayId": "donut-release", 
-                            "id": "refs/heads/donut-release", 
-                            "isDefault": false, 
-                            "latestChangeset": "b5046342562aff58af33ae25cfcd1cc3abe27fc8", 
-                            "latestCommit": "b5046342562aff58af33ae25cfcd1cc3abe27fc8", 
-                            "type": "BRANCH"
-                        }
-                    ], 
-                    "name": "platform_frameworks_base-2088998", 
-                    "weight": 0.009433962264150943
                 }
             ]
         }, 
