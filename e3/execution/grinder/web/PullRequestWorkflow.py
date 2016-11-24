@@ -94,9 +94,16 @@ class PullRequestWorkflow(TestScript):
         # create branch, edit, add, commit and push
         feature_branch = self.create_branch_edit_files_push_to_repo(me, working_dir)
         branches = rest_get_branches(self, project_key, repo_slug)
-        from_branch = get_branch_by_id(branches, feature_branch)
-        to_branch = rest_get_default_branch(self, project_key, repo_slug)
-        return from_branch, to_branch
+        if branches:
+            if len(branches) > 0:
+                from_branch = get_branch_by_id(branches, feature_branch)
+                to_branch = rest_get_default_branch(self, project_key, repo_slug)
+                return from_branch, to_branch
+            else:
+                self.warn("No branches found for repository %s/%s" % (project_key, repo_slug))
+        else:
+            self.warn("Unable to get a list of branches for repository %s/%s" % (project_key, repo_slug))
+        return None, None
 
     def checkout_master_and_pull(self, me, working_dir):
         # Pull any changes

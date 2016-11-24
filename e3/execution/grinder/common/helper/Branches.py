@@ -56,5 +56,6 @@ def get_branch_by_id(branches, branch_id):
     :return: The branch if found else None
     :rtype: Branch
     """
-    possible_match = filter(lambda r: r.identifier == branch_id or r.display_identifier == branch_id, branches)
-    return possible_match[0] if possible_match else None
+    if branches and branch_id:
+        possible_match = filter(lambda r: r.identifier == branch_id or r.display_identifier == branch_id, branches)
+        return possible_match[0] if possible_match else None
