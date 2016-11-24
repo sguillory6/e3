@@ -94,7 +94,7 @@ class PullRequestWorkflow(TestScript):
         # create branch, edit, add, commit and push
         feature_branch = self.create_branch_edit_files_push_to_repo(me, working_dir)
         branches = rest_get_branches(self, project_key, repo_slug)
-        if branches:
+        if branches is not None:
             if len(branches) > 0:
                 from_branch = get_branch_by_id(branches, feature_branch)
                 to_branch = rest_get_default_branch(self, project_key, repo_slug)
