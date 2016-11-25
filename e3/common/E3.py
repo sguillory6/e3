@@ -134,12 +134,13 @@ class E3:
 
     def load_authentication(self):
         auth_type = self.get_auth_type()
-        auth_config_key = 'aws_auth_%s' % auth_type
-        module_name = self._config.get('e3', {auth_config_key: {'class': None}}).get(auth_config_key).get('class')
-        if module_name:
-            clazz_name = module_name.split(".").pop()
-            security_clazz = getattr(importlib.import_module(module_name), clazz_name)
-            return security_clazz(self)
+        if auth_type:
+            auth_config_key = 'aws_auth_%s' % auth_type
+            module_name = self._config.get('e3', {auth_config_key: {'class': None}}).get(auth_config_key).get('class')
+            if module_name:
+                clazz_name = module_name.split(".").pop()
+                security_clazz = getattr(importlib.import_module(module_name), clazz_name)
+                return security_clazz(self)
 
     def load_experiment(self, experiment):
         exp = os.path.join(self.get_e3_home(), "experiments", "%s.json" % experiment)
