@@ -5,7 +5,7 @@ These experiments can be useful to compare the performance of different Bitbucke
 hardware infrastructure setups under workloads of different sizes and shapes.
 
 While the experiment runs, both system-level and application-level metrics are monitored from all machines involved
-using the [`collectd`](https://collectd.org/) service.  This information, as well as data on response times and throughput
+using the [`collectd`](https://collectd.org/) service. This information, as well as data on response times and throughput
 gathered from client and server-side logfiles can be summarized in a number of different graphical charts and visualizations.
 
 The machine(s) that run the actual client(s) and Bitbucket node(s) can be any machines you have access to, or (if you
@@ -57,7 +57,7 @@ automatically. For an example implementation information see [`AtlassianAwsSecur
 Most of E³ is written in Python and requires a number of Python libraries. These requirements are described in a standard
 `requirements.txt` file, and can be installed using the standard Python `pip` and `virtualenv` tools as follows:
 
-```
+```bash
 sudo pip install virtualenv
 virtualenv .ve
 source .ve/bin/activate
@@ -69,7 +69,7 @@ pip install -r requirements.txt
 To provision machines for, run, gather data, and analyze an experiment designed to stress different
 Bitbucket instances with lots of parallel Git hosting operations over SSH:
 
-```
+```bash
 ./Orchestrate.py -e cluster-scaling-ssh
 ```
 
@@ -95,20 +95,21 @@ The workloads referenced in the experiment JSON file are defined in [`e3-home/da
 
 Performance experiments have a number of phases, which correspond to the the following entry points:
 
-1. [`Provision`](Provision.py), which spins up Bitbucket instance(s), cluster(s) of worker machines, and other associated
+1. [`Provision`](./e3/Provision.py), which spins up Bitbucket instance(s), cluster(s) of worker machines, and other associated
    infrastructure in AWS. Will automatically create a 'run file' in [`e3-home/runs`](./e3-home/runs) from your experiment
    definition. (You can skip this step if you have your own infrastructure, but you will need to
    create a run file and fill in your machines' details first.)
-2. [`Run`](Run.py), which actually runs the client workload from the worker machine(s) (and also resets the
+2. [`Run`](./e3/Run.py), which actually runs the client workload from the worker machine(s) (and also resets the
    Bitbucket instance(s) to a known good state in between stages).
-3. [`Gather`](Gather.py) which gathers data from an experiment run (either running or finished) off all the machines.
-4. [`Analyze`](Analyze.py) which analyzes the data from an experiment run into charts that help visualize how well the
+3. [`Gather`](./e3/Gather.py) which gathers data from an experiment run (either running or finished) off all the machines.
+4. [`Analyze`](./e3/Analyze.py) which analyzes the data from an experiment run into charts that help visualize how well the
    instance(s) performed and all their "vital signs" while under stress.
 
-In addtion to the global [`Orchestrate`](Orchestrate.py) entry point, which runs all these phases in order,
+In addtion to the global [`Orchestrate`](./e3/Orchestrate.py) entry point, which runs all these phases in order,
 each phase can also be run individually:
 
-```
+```bash
+cd ./e3
 ./Provision.py -e <experiment_name>
 ./Run.py -r <run_name>
 ./Gather.py -r <run_name>
@@ -141,9 +142,69 @@ If you are running experiments elsewhere, you will need to provide E3 with a des
 instance you are running an experiment against.
 To generate a new snapshot descriptor you can use the [`Snapshot`](./e3/util/Snapshot.py) script:
 
-```
+```bash
 ./util/Snapshot.py --url "https://bitbucket-instance" --username admin --password admin --repo-count 100 --distribution equal --name snapshot-name --description "snapshot description"
 ```
+
+#### SSH Keys
+
+A keys file can be used to store public/private key pairs, which users are supposed to use to authenticate with Bitbucket when running an experiment.
+These descriptors are stored in [`e3-home/keys`](./e3-home/keys).
+
+If you are using an existing dataset, you will need to provide the public and private SSH keys that E³ can use to authenticate over SSH.
+If you provide a `key-file` to the `Snapshot` script, it will look up the users in your instance and map the private key to the configured public key for each user.
+
+#### Passwords
+
+Currently, the `Snapshot` script assumes all users have the same password (`password` by default). 
+
+**Note:** 
+E³ assumes every user has access to every project/repository. Test scripts are not resilient to failures because of insufficient permissions.
+
+### Workloads
+
+A workload defines the types and distribution of execution scripts run in your experiment. You can only define a single workload per experiment.
+Workload descriptors are stored in [`e3-home/workloads`](./e3-home/workloads).
+
+A workload description contains: 
+
+- `script`: the path of the script relative to the `e3/execution/grinder` directory
+- `description`: the name of the description; used in graphs produced by analysis
+- `scale`: the relative weight to give the experiment in the analysis stage. Can be used to reduce the visual impact of less important or cheaper operations.
+- `weight`: the weight to give to this execution script. All weights should add up to 1.0
+
+#### Weights 
+
+The way E³ assigns work to client threads and workers means that weights in a workload definition do not have infinite resolution.
+An example to illustrate this: 
+
+##### experiment.json
+
+```json
+{
+    ...
+    "stages": [
+        {
+            "clients": 10
+        },
+        {
+            "clients": 20
+        }
+    ]
+}
+```
+
+Because the experiment defined above is running a stage with only 10 clients, the maximum resolution the weights can afford is 1/10 or 0.1.
+Therefore defining a workload that contains a script with a weight under 0.1 may not be executed.
+
+E³ will also attempt to distribute client threads amongst all worker machines evenly. This means when choosing the number of client threads for each stage,
+you should aim to ensure the number is divisible by the number of worker machines you have allocated.
+
+### Analysis
+
+TODO
+
+---
 
 ## Contributing
 
