@@ -11,6 +11,23 @@ gathered from client and server-side logfiles can be summarized in a number of d
 The machine(s) that run the actual client(s) and Bitbucket node(s) can be any machines you have access to, or (if you
 prefer) can all be provisioned automatically in the Amazon Web Services (AWS) cloud.
 
+<!-- TOC -->
+
+- [Setup](#markdown-header-setup)
+    - [Pre-requisites](#markdown-header-pre-requisites)
+    - [Installing](#markdown-header-installing)
+- [Getting started](#markdown-header-getting-started)
+- [Experiments](#markdown-header-experiments)
+    - [Defining an Experiment](#markdown-header-defining-an-experiment)
+    - [Experiment Phases](#markdown-header-experiment-phases)
+    - [Snapshots](#markdown-header-snapshots)
+    - [Workloads](#markdown-header-workloads)
+    - [Analysis](#markdown-header-analysis)
+- [Contributing](#markdown-header-contributing)
+- [License](#markdown-header-license)
+
+<!-- /TOC -->
+
 ## Setup
 
 ### Pre-requisites
