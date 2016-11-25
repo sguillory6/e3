@@ -86,17 +86,17 @@ Experiments are described in JSON files that define:
 * the mix of operations in the workload, and
 * the amount of load to apply in each stage of the experiment (the number of client threads).
 
-There is a library of pre-defined experiments under [`e3-home/data/experiments`](../e3-home/data/experiments),
+There is a library of pre-defined experiments under [`e3-home/data/experiments`](./e3-home/data/experiments),
 or you can define your own.
 
-The workloads referenced in the experiment JSON file are defined in [`e3-home/data/workloads`](../e3-home/data/workloads).
+The workloads referenced in the experiment JSON file are defined in [`e3-home/data/workloads`](./e3-home/data/workloads).
 
 ### Experiment Phases
 
 Performance experiments have a number of phases, which correspond to the the following entry points:
 
 1. [`Provision`](Provision.py), which spins up Bitbucket instance(s), cluster(s) of worker machines, and other associated
-   infrastructure in AWS. Will automatically create a 'run file' in [`e3-home/runs`](../e3-home/runs) from your experiment
+   infrastructure in AWS. Will automatically create a 'run file' in [`e3-home/runs`](./e3-home/runs) from your experiment
    definition. (You can skip this step if you have your own infrastructure, but you will need to
    create a run file and fill in your machines' details first.)
 2. [`Run`](Run.py), which actually runs the client workload from the worker machine(s) (and also resets the
@@ -118,12 +118,12 @@ each phase can also be run individually:
 ### Snapshots
 
 Snapshot descriptor files are used to describe a Bitbucket dataset.
-They are stored in [`e3-home/snapshots`](../e3-home/snapshots).
+They are stored in [`e3-home/snapshots`](./e3-home/snapshots).
 Atlassian provides a number of default snapshots:
 
-- [`e3-medium`](../e3-home/snapshots/e3-medium.json)
-- [`bitbucket-e3-small`](../e3-home/snapshots/bitbucket-e3-small.json)
-- [`bitbucket-e3-medium`](../e3-home/snapshots/bitbucket-e3-medium.json)
+- [`e3-medium`](./e3-home/snapshots/e3-medium.json)
+- [`bitbucket-e3-small`](./e3-home/snapshots/bitbucket-e3-small.json)
+- [`bitbucket-e3-medium`](./e3-home/snapshots/bitbucket-e3-medium.json)
 
 These default snapshots all have:
 
@@ -139,8 +139,39 @@ If you are running experiments in AWS, these default snapshots can help to quick
 
 If you are running experiments elsewhere, you will need to provide E3 with a descriptor of the dataset of the Bitbucket
 instance you are running an experiment against.
-To generate a new snapshot descriptor you can use the [`Snapshot`](./util/Snapshot.py) script:
+To generate a new snapshot descriptor you can use the [`Snapshot`](./e3/util/Snapshot.py) script:
 
 ```
 ./util/Snapshot.py --url "https://bitbucket-instance" --username admin --password admin --repo-count 100 --distribution equal --name snapshot-name --description "snapshot description"
 ```
+
+## Contributing
+
+Pull requests, issues and comments welcome. For pull requests:
+
+* Follow the existing style
+* Separate unrelated changes into multiple pull requests
+
+See the existing [issues](https://bitbucket.org/atlassian/elastic-experiment-executor/issues?status=new&status=open) for things to start contributing.
+
+For bigger changes, make sure you start a discussion first by creating
+an issue and explaining the intended change.
+
+Atlassian requires contributors to sign a Contributor License Agreement,
+known as a CLA. This serves as a record stating that the contributor is
+entitled to contribute the code/documentation/translation to the project
+and is willing to have it used in distributions and derivative works
+(or is willing to transfer ownership).
+
+Prior to merging your pull requests, please follow the appropriate
+link below to digitally sign the CLA. The Corporate CLA is for those who are
+contributing as a member of an organization and the individual CLA is for
+those contributing as an individual.
+
+* [Corporate CLA](https://na2.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=e1c17c66-ca4d-4aab-a953-2c231af4a20b)
+* [Individual CLA](https://na2.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=3f94fbdc-2fbe-46ac-b14c-5d152700ae5d)
+
+## License
+
+Copyright (c) 2016 Atlassian and others.
+Apache 2.0 licensed, see [LICENSE.txt](LICENSE.txt) file.
