@@ -8,6 +8,7 @@ import requests
 from requests.exceptions import ConnectTimeout, ConnectionError
 
 FNULL = open(os.devnull, 'w')
+__LAUNCH_EXTERNAL_VIEWER__ = [True]
 
 
 def quote_if_necessary(s):
@@ -50,6 +51,11 @@ def now():
     return datetime.datetime.now().replace(microsecond=0)
 
 
+def disable_external_tool():
+    global __LAUNCH_EXTERNAL_VIEWER__
+    __LAUNCH_EXTERNAL_VIEWER__[0] = False
+
+
 def open_with_external_tool(resources_to_open):
     """
     Opens the specified resources with an external tool, based on the OS
@@ -59,17 +65,19 @@ def open_with_external_tool(resources_to_open):
     :rtype: None
     """
     # Open the resulting images using the system "open" or "see" command
-    if not try_open_with('open', resources_to_open):
-        # open failed, try see
-        if not try_open_with('see', resources_to_open):
-            # On linux the gnome-open and xdg-open takes only one file at a time
-            for resource_to_open in resources_to_open:
-                # see failed, try gnome-open
-                if not try_open_with('gnome-open', resource_to_open):
-                    # gnome-open failed, try xdg-open
-                    if not try_open_with('xdg-open', resource_to_open):
-                        # all failed, print the names of the images
-                        print("Output images: %s" % resource_to_open)
+    global __LAUNCH_EXTERNAL_VIEWER__
+    if __LAUNCH_EXTERNAL_VIEWER__[0]:
+        if not try_open_with('open', resources_to_open):
+            # open failed, try see
+            if not try_open_with('see', resources_to_open):
+                # On linux the gnome-open and xdg-open takes only one file at a time
+                for resource_to_open in resources_to_open:
+                    # see failed, try gnome-open
+                    if not try_open_with('gnome-open', resource_to_open):
+                        # gnome-open failed, try xdg-open
+                        if not try_open_with('xdg-open', resource_to_open):
+                            # all failed, print the names of the images
+                            print("Output images: %s" % resource_to_open)
 
 
 def poll_url(url, max_poll_time_seconds, success_callback):
