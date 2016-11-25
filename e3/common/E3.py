@@ -172,6 +172,14 @@ class E3:
         else:
             logging.error("%s: does not exist", run)
 
+    def load_snapshot(self, snapshot_name):
+        run = os.path.join(self.get_e3_home(), "snapshots", "%s.json" % snapshot_name)
+        if os.path.exists(run):
+            with open(run, "r") as instance_file:
+                return json.loads(instance_file.read())
+        else:
+            logging.error("%s: does not exist", run)
+
     def archive_run(self, run_name):
         run = os.path.join(self.get_e3_home(), "runs", run_name)
         destination = os.path.join(self.get_e3_home(), "archive", run_name)

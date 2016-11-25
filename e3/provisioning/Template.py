@@ -6,6 +6,7 @@ import os
 import time
 
 from common.E3 import e3
+from botocore.exceptions import ClientError
 
 try:
     from botocore.vendored.requests.packages.urllib3.contrib import pyopenssl
@@ -50,41 +51,70 @@ class Template:
         self._log.info("PEM file for instance written to %s" % pem_file.name)
         return stack_name
 
-    def find_ebs_snapshot(self, snapshot):
-        snapshots = self._aws.ec2.describe_snapshots(Filters=[{
-            'Name': 'tag:e3-dataset',
-            'Values': [snapshot]
-        }])['Snapshots']
-        if len(snapshots) > 1:
-            raise Exception("Found more than one AWS EBS snapshot with tag e3-dataset='%s'" % snapshot)
-        elif len(snapshots) == 0:
-            raise Exception("Could not find any AWS EBS snapshot with tag e3-dataset='%s'" % snapshot)
-        snapshot_id = snapshots[0]['SnapshotId']
-        self._log.info("Found EBS snapshot ID '%s' for snapshot '%s'" % (snapshot_id, snapshot))
-        return snapshot_id
+    def get_ebs_snapshot_id(self, snapshot):
+        """
+        Validates and returns an EBS snapshot Id obtained from a snapshot file
+        :param snapshot: the name of the snapshot file containing the EBS snapshot Id
+        :return: returns a valid EBS snapshot Id
+        """
+        ebs_snapshot_id = e3.load_snapshot(snapshot)['ebs']
+        self._log.info("Found EBS snapshot ID '%s' in snapshot file '%s.json'" % (ebs_snapshot_id, snapshot))
+        self.validate_ebs_snapshot_id(ebs_snapshot_id)
+        return ebs_snapshot_id
 
-    def find_rds_snapshot(self, snapshot):
+    def get_rds_snapshot_id(self, snapshot):
         """
-        Finds the RDS snapshot ID from the given snapshot
-        :param snapshot: the name of RDS snapshot
-        :return: The RDS snapshot ID
+        Validates and returns a RDS snapshot ID obtained from a snapshot file
+        :param snapshot: the name of the snapshot file containing the RDS snapshot Id
+        :return: returns a valid RDS snapshot Id
         """
-        snapshots = self._aws.rds.describe_db_snapshots(DBSnapshotIdentifier=snapshot,
-                                                        IncludePublic=True)['DBSnapshots']
-        if len(snapshots) > 1:
-            raise Exception("Found more than one AWS RDS snapshot with name '%s'" % snapshot)
-        elif len(snapshots) == 0:
-            raise Exception("Could not find any AWS RDS snapshot with name '%s'" % snapshot)
-        snapshot_id = snapshots[0]['DBSnapshotIdentifier']
-        self._log.info("Found RDS snapshot ID '%s' for snapshot '%s'" % (snapshot_id, snapshot))
-        return snapshot_id
+        rds_snapshot_id = e3.load_snapshot(snapshot)['rds']
+        self._log.info("Found RDS snapshot ID '%s' in snapshot file '%s.json'" % (rds_snapshot_id, snapshot))
+        self.validate_rds_snapshot_id(rds_snapshot_id)
+        return rds_snapshot_id
+
+    def get_es_snapshot_id(self, snapshot):
+        """
+        Validates and returns an ES snapshot ID obtained from a snapshot file
+        :param snapshot: the name of the snapshot file containing the ES snapshot Id and S3 bucket
+        :return: returns a valid ES snapshot Id
+        """
+        snapshot_config = e3.load_snapshot(snapshot)['es']
+        es_snapshot_id = snapshot_config['id']
+        es_snapshot_bucket = snapshot_config['bucket']
+        self._log.info("Found ES snapshot ID '%s' in snapshot file '%s.json'" % (es_snapshot_id, snapshot))
+        self.validate_es_snapshot_id(es_snapshot_id, es_snapshot_bucket)
+        return es_snapshot_id
+
+    def validate_ebs_snapshot_id(self, snapshot_id):
+        """
+        Ensures that the EBS Snapshot is accessible for this AWS account
+        :param snapshot_id: the Id of the EBS snapshot to validate
+        """
+        try:
+            response = self._aws.ec2.describe_snapshots(SnapshotIds=[snapshot_id])
+        except ClientError, e:
+            self.log.debug("Amazon responded with '%s'" % e)
+            raise Exception("Could not find any AWS EBS snapshot with Id '%s'" % snapshot_id)
+        self._log.info("EBS snapshot ID '%s' is valid" % snapshot_id)
+
+    def validate_rds_snapshot_id(self, snapshot_id):
+        """
+        Ensures that the RDS Snapshot is accessible for this AWS account
+        :param snapshot_id: the Id of the RDS snapshot to validate
+        """
+        try:
+            response = self._aws.rds.describe_db_snapshots(DBSnapshotIdentifier=snapshot_id, IncludePublic=True)
+        except ClientError, e:
+            self.log.debug("Amazon responded with '%s'" % e)
+            raise Exception("Could not find any AWS RDS snapshot with Id '%s'" % snapshot_id)
+        self._log.info("RDS snapshot ID '%s' is valid" % snapshot_id)
 
     def validate_es_snapshot_id(self, snapshot, bucket):
         """
         Ensures that both the S3 bucket the Elasticsearch snapshot exists
         :param snapshot: the name of Elasticsearch snapshot
         :param bucket: the S3 bucket that contains the Elasticsearch snapshot
-        :return: The Elasticsearch snapshot
         """
         self._log.debug("Validating Elasticsearch snapshot '%s' in S3 bucket '%s'" % (snapshot, bucket))
         if not snapshot:
@@ -93,8 +123,7 @@ class Template:
             raise Exception("You must specify an S3 bucket when restoring an Elasticsearch snapshot")
 
         self._aws.s3_client.get_object(Bucket=bucket, Key="snap-%s.dat" % snapshot)
-        self._log.info("Found ES snapshot '%s' in S3 bucket '%s'" % (snapshot, bucket))
-        return snapshot
+        self._log.info("ES snapshot '%s' in S3 bucket '%s' is valid" % (snapshot, bucket))
 
     def get_es_bucket_name(self):
         if 'ESBucketName' in self._e3_properties['parameters']:
