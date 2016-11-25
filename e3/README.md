@@ -1,37 +1,61 @@
-# E3: Elastic Experiment Executor
+# E³: Elastic Experiment Executor
 
-E3 is a framework to set up, execute, and analyze performance experiments on Bitbucket Server and Data Center instances.
-You can run it from your own machine(s), or (optionally) provision all the machines you need using Amazon Web Services (AWS).
+E³ is a framework to set up, execute, and analyze performance experiments on Bitbucket Server and Data Center instances.
+These experiments can be useful to compare the performance of different Bitbucket versions, software configurations, and
+hardware infrastructure setups under workloads of different sizes and shapes.
 
-Experiments are described in JSON files that define:
+While the experiment runs, both system-level and application-level metrics are monitored from all machines involved
+using the [`collectd`](https://collectd.org/) service.  This information, as well as data on response times and throughput
+gathered from client and server-side logfiles can be summarized in a number of different graphical charts and visualizations.
 
-* the independent stage(s) to run (in parallel),
-* the size and shape of the instance(s) under test,
-* the size and shape of the worker machine(s) that  (often important when ), and
-* the mix of operations in the workload, and
-* the amount of load to apply in each step of the experiment. 
-
-There is a library of pre-defined experiments under `data/experiments`, or you can define your own. 
+The machine(s) that run the actual client(s) and Bitbucket node(s) can be any machines you have access to, or (if you
+prefer) can all be provisioned automatically in the Amazon Web Services (AWS) cloud.
 
 ## Setup
 
-E3 depends on a number of open source software packages. The easiest way to install these pre-requisites is with your
-operating system's package manager. For example (choose the line most appropriate for you):
+### Pre-requisites
 
-```
-# MacOS with homebrew
+#### Software
+E³ requires a Linux or MacOS machine with a number of open source software packages. The easiest way to install these
+pre-requisites is with your operating system's package manager. For example:
+
+
+##### MacOS with homebrew
     brew    install gnuplot --with-cairo
     brew    install imagemagick python rrdtool
-    
-# Linux Ubuntu, Debian, ...
+   
+##### Linux Ubuntu, Debian, ...
     apt-get install gnuplot imagemagick python rrdtool
 
-# Linux Red Hat, CentOS, ...
+##### Linux Red Hat, CentOS, ...
     yum     install gnuplot imagemagick python rrdtool
+
+
+For other systems, refer to your system's documentation on how to install these prerequisites.
+
+#### AWS
+
+E³ provides the ability to easily provision machines in the AWS Cloud.
+
+If you choose to provision your experiment machine(s) in AWS, you must have an AWS account with permission to create
+resources. You can specify the credentials for your AWS account in any of the places that `boto3` looks.
+(See [configuring credentials](https://boto3.readthedocs.io/en/latest/guide/configuration.html#configuring-credentials).)
+
+If your organization uses IAM roles to autheticate with AWS, E³ also includes the ability to acquire AWS credentials
+automatically. For an example implementation information see [`AtlassianAwsSecurity.py`](provisioning/AtlassianAwsSecurity.py).
+
+```
+  .     Warning:
+ / \    Provisioning AWS infrastructure can incur significant service charges from Amazon.
+/ ! \   You are responsible for all Amazon service charges arising from your use of the E³ framework.
+‾‾‾‾‾
 ```
 
-Most of E3 is written in Python and requires a number of Python libraries to be installed. One way to do this is as
-follows:
+
+### Installing
+
+Most of E³ is written in Python and requires a number of Python libraries. These requirements are described in a standard
+`requirements.txt` file, and can be installed using the standard Python `pip` and `virtualenv` tools as follows:
 
 ```
 sudo pip install virtualenv
@@ -40,113 +64,83 @@ source .ve/bin/activate
 pip install -r requirements.txt
 ```
 
-If you provision your experiments in AWS, you must have an AWS account with permission to create resources. You can
-specify the credentials for your AWS account in any of the places that `boto3` looks.
-(See https://boto3.readthedocs.io/en/latest/guide/configuration.html#configuring-credentials.)
-
-**Warning: Provisioning AWS infrastructure can incur significant service charges from Amazon. You are responsible for all
-Amazon service charges arising from your use of the E3 framework.**
-
 ## Getting started
 
-To provision, run, and gather data from an experiment designed to stress different Bitbucket instances with
-lots of parallel Git hosting operations over SSH:
+To provision machines for, run, gather data, and analyze an experiment designed to stress different
+Bitbucket instances with lots of parallel Git hosting operations over SSH:
 
 ```
 ./Orchestrate.py -e cluster-scaling-ssh
 ```
 
-## More advanced usage
+## Experiments
 
-Performance experiments have a number of phases, which correspond to the the following packages:
+### Defining an Experiment
 
-* `generator`, which generates random test data for the Bitbucket instance. 
-  (You can skip this step if you already have some test data, or are willing to use one of the pre-generated
-  test data snapshots provided by Atlassian.)
-* `provisioning`, which spins up Bitbucket instance(s), cluster(s) of worker machines, and other associated
-  infrastructure in AWS. (You can skip this step if you have your own infrastructure, but you will need to
-  fill in your machines' details into your experiment file first.)
-* `execution` which actually runs the client workload from the worker machine(s) (and also resets the
-  Bitbucket instance(s) to a known good state in between stages).
-* `gather` which gathers data from an experiment run (either running or finished) off all the machines.
-* `analysis` which analyzes the data from an experiment run into charts that help visualize how well the
-  instance(s) performed and all their "vital signs" while under stress.
+Experiments are described in JSON files that define:
 
-These phases can be run individually or 
+* the independent experiment thread(s) to run (in parallel),
+* the size and shape of the Bitbucket instance(s) under test,
+* the shape of the data (projects, repositories, users, etc.) in the Bitbucket instance(s),
+* the size and shape of the client machine(s) that put load on the Bitbucket instance(s), and
+* the mix of operations in the workload, and
+* the amount of load to apply in each stage of the experiment (the number of client threads).
+
+There is a library of pre-defined experiments under [`e3-home/data/experiments`](../e3-home/data/experiments),
+or you can define your own.
+
+The workloads referenced in the experiment JSON file are defined in [`e3-home/data/workloads`](../e3-home/data/workloads).
+
+### Experiment Phases
+
+Performance experiments have a number of phases, which correspond to the the following entry points:
+
+1. [`Provision`](Provision.py), which spins up Bitbucket instance(s), cluster(s) of worker machines, and other associated
+   infrastructure in AWS. Will automatically create a 'run file' in [`e3-home/runs`](../e3-home/runs) from your experiment
+   definition. (You can skip this step if you have your own infrastructure, but you will need to
+   create a run file and fill in your machines' details first.)
+2. [`Run`](Run.py), which actually runs the client workload from the worker machine(s) (and also resets the
+   Bitbucket instance(s) to a known good state in between stages).
+3. [`Gather`](Gather.py) which gathers data from an experiment run (either running or finished) off all the machines.
+4. [`Analyze`](Analyze.py) which analyzes the data from an experiment run into charts that help visualize how well the
+   instance(s) performed and all their "vital signs" while under stress.
+
+In addtion to the global [`Orchestrate`](Orchestrate.py) entry point, which runs all these phases in order,
+each phase can also be run individually:
 
 ```
-./provisioning/Provision.py -e cluster-scaling.ssh
-./Run.py 
+./Provision.py -e <experiment_name>
+./Run.py -r <run_name>
+./Gather.py -r <run_name>
+./Analyze.py -r <run_name>
 ```
 
-### Snapshot generation.
+### Snapshots
 
-The snapshot generation script can be run by executing the Snapshot.py script like so.
-`/Snapshot.py --url "https://stash-instance" --username admin --password admin --repo-count 100 --distribution exponential --distribution-factor 2 --name name --description "snapshot description"`
+Snapshot descriptor files are used to describe a Bitbucket dataset.
+They are stored in [`e3-home/snapshots`](../e3-home/snapshots).
+Atlassian provides a number of default snapshots:
 
+- [`e3-medium`](../e3-home/snapshots/e3-medium.json)
+- [`bitbucket-e3-small`](../e3-home/snapshots/bitbucket-e3-small.json)
+- [`bitbucket-e3-medium`](../e3-home/snapshots/bitbucket-e3-medium.json)
 
-## Experiment?
-An experiments defines.
-#### Topology
-Defines a set of nodes that will be orchestrated in order to run an experiment in practise these will either be `ec2` or
-`RDS` instances running in `AWS` this can be further broken down into `System topology` and `Test Topology`. Each
-topology will support further configuration options such as  `ec2-instance-type` and `ebs-volume-type`.
-##### System Topology
-Defined the system under test that the experiment will be run against. Some of the topologies that will be supported
-include.
-* Standalone bitbucket instance connected to postgresql database all running on the same ec2-instance.
-* Bitbucket data centre cluster comprising (2,4) nodes connected to RDS database.
-* Bitbucket data centre cluster comprising (2,4) nodes connected to RDS database with x mirrors.
-##### Test Topology
-Defines the number of nodes that will be orchestrated in order to place load on the system under test.
-#### Test data
-Define the test data to be loaded into the system under test essentially comprises a tuple of ec2 volume snapshots comprising
-Repository data and database data.
-#### Load
-This defines the type and volume of load to be executed against the system under test by the test topology. A registry of
-intrinsic will be built up over time to reflect realistic user behaviour.
-#### Collect
-Defines the data to be collected from the experiment and how often to collect it.
-#### Analysis
-Defines the analysis steps to be performed against the data collected.
+These default snapshots all have:
 
-## Third party components
+- a public [EBS snapshot](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html) of the file server
+- a public [RDS snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.BackingUpAndRestoringAmazonRDSInstances.html#Overview.BackingUpAndRestoringAmazonRDSInstances-Snapshots)
+of the Database
+- a public [Elasticsearch snapshot](https://www.elastic.co/guide/en/elasticsearch/reference/2.3/modules-snapshots.html) in [S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html)
+containing the search index
 
-This framework makes use of the following technologies.
+for the data described in the JSON snapshot descriptor.
 
-* [Python](https://www.python.org/)
-* [AWS](https://aws.amazon.com/)
-* [boto3](https://github.com/boto/boto3) AWS SDK for Python.
-* [collectd](https://collectd.org/) to fetch metrics from Experiment runs.
-* [Grinder](http://grinder.sourceforge.net/) to co-ordinate test load across a number of machines.
-* [Click](http://click.pocoo.org/5/) Command line option passing
+If you are running experiments in AWS, these default snapshots can help to quickly get you up and running experiments.
 
-#### Components
+If you are running experiments elsewhere, you will need to provide E3 with a descriptor of the dataset of the Bitbucket
+instance you are running an experiment against.
+To generate a new snapshot descriptor you can use the [`Snapshot`](./util/Snapshot.py) script:
 
-At a high level this framework is made up of the following independent components. Each component will support reading/
-writing to a json file that describes the work done or the work desired.
-
-##### Validation
-Takes a best effort approach to ensuring that an experiment will not fail because of something that could have been
-checked upfront for example checking that all `AWS` resources defined as being part of an Experiment exist.
-##### Orchestration
-The orchestration component is responsible for taking `Experiment` config and setting up all the resource into a state
-into which test runs can begin. This includes provisioning both the `System Topology` as well as the `Test Topology`,
-Running any custom data setup that a targeted `Experiment` desires.
-To see options for orchestration run `./python Orchestrate.py --help`
-##### Workload
-Perform load against a `System Topology`
-##### Collect
-Collect data from a test topology
-##### Analyze
-Perform analysis against the data collected in the previous step.
-
-
-
-# TODO
-* Provision system under test with test data snapshot
-* Provision system under test with collectd.
-* Save the results of the orchestration step to .json file
-* Add more functionality to orchestrate command line to enable the querying the resources provisioned by a experiment
-* Add proper logging
-* Tests
+```
+./util/Snapshot.py --url "https://bitbucket-instance" --username admin --password admin --repo-count 100 --distribution equal --name snapshot-name --description "snapshot description"
+```
