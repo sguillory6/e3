@@ -8,7 +8,7 @@
         "name": "2-nodes-fixed",
         "version": "4.11.0",
         "snapshot": "e3-medium",
-        "template": "BitbucketDataCenterLDAP",
+        "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600",
           "throttle.resource.scm-hosting.strategy=fixed"
@@ -45,7 +45,7 @@
         "name": "2-nodes-adaptive-75",
         "version": "4.11.0",
         "snapshot": "e3-medium",
-        "template": "BitbucketDataCenterLDAP",
+        "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600",
           "throttle.resource.scm-hosting.adaptive.mem.backstop.enabled=false"
@@ -82,7 +82,7 @@
         "name": "2-nodes-adaptive-90",
         "version": "4.11.0",
         "snapshot": "e3-medium",
-        "template": "BitbucketDataCenterLDAP",
+        "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600",
           "throttle.resource.scm-hosting.adaptive.cpu.target=0.9",

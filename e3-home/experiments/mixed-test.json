@@ -7,8 +7,8 @@
       "instance": {
         "name": "2-node",
         "version": "4.11.0",
-        "snapshot": "bitbucket-e3-medium",
-        "template": "BitbucketDataCenterLDAP",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
         "properties": ["db.schema.lock.maxWait=600"],
         "parameters": {
           "ClusterNodeMin": "2",

@@ -8,8 +8,8 @@
       "instance": {
         "name": "3-node",
         "version": "4.11.0",
-        "snapshot": "bitbucket-e3-medium",
-        "template": "BitbucketDataCenterLDAP",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
         "properties": [
           "plugin.bitbucket-git.throttle.ref.advertisement=false",
           "plugin.bitbucket-scm-cache.upload-pack.enabled=false",
