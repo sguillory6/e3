@@ -50,8 +50,7 @@ For other systems, refer to your system's documentation on how to install these 
 
 E³ provides the ability to easily provision machines in the AWS Cloud.
 
-If you choose to provision your experiment machine(s) in AWS, you must have an AWS account with permission to create
-resources. You can specify the credentials for your AWS account in any of the places that `boto3` looks.
+You can specify the credentials for your AWS account in any of the places that `boto3` looks.
 (See [configuring credentials](https://boto3.readthedocs.io/en/latest/guide/configuration.html#configuring-credentials).)
 
 If your organization uses IAM roles to autheticate with AWS, E³ also includes the ability to acquire AWS credentials
@@ -61,7 +60,7 @@ automatically. For an example implementation information see [`AtlassianAwsSecur
   .     Warning:
  / \    Provisioning AWS infrastructure can incur significant service charges from Amazon.
 / ! \   You are responsible for all Amazon service charges arising from your use of the E³ framework.
-‾‾‾‾‾
+‾‾‾‾‾   You are responsible for securing any proprietary data on your test machines.
 ```
 
 
@@ -79,7 +78,7 @@ pip install -r requirements.txt
 
 ## Getting started
 
-To provision machines for, run, gather data, and analyze an experiment designed to stress different
+To provision machines to run, gather data, and analyze an experiment designed to stress different
 Bitbucket instances with lots of parallel Git hosting operations over SSH:
 
 ```bash
@@ -117,6 +116,7 @@ Performance experiments have a number of phases, which correspond to the the fol
 3. [`Gather`](./e3/Gather.py) which gathers data from an experiment run (either running or finished) off all the machines.
 4. [`Analyze`](./e3/Analyze.py) which analyzes the data from an experiment run into charts that help visualize how well the
    instance(s) performed and all their "vital signs" while under stress.
+5. [`Deprovision`](./e3/Deprovision.py) which deprovisions the test machines and archives the experiment run.
 
 In addtion to the global [`Orchestrate`](./e3/Orchestrate.py) entry point, which runs all these phases in order,
 each phase can also be run individually:
@@ -223,6 +223,15 @@ There are 2 types of analysis scripts included:
 - `rrdtool`
 
 Calling `./e3/Analyze.py -r <run_name` will produce both types of graphs for a specific run.
+
+To produce only one type of graph:
+
+    ./e3/analysis/gnuplot/Analyze.py <run_name>
+
+or
+
+    ./e3/analysis/rrdtool/Analyze.py -r <run_name>
+
 Any produced graphs will be stored in the `e3-home/runs/<run_name>/analysis` directory.
 
 ---
