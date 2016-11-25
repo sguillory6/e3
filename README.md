@@ -11,8 +11,6 @@ gathered from client and server-side logfiles can be summarized in a number of d
 The machine(s) that run the actual client(s) and Bitbucket node(s) can be any machines you have access to, or (if you
 prefer) can all be provisioned automatically in the Amazon Web Services (AWS) cloud.
 
-<!-- TOC -->
-
 - [Setup](#markdown-header-setup)
     - [Pre-requisites](#markdown-header-pre-requisites)
     - [Installing](#markdown-header-installing)
@@ -25,8 +23,6 @@ prefer) can all be provisioned automatically in the Amazon Web Services (AWS) cl
     - [Analysis](#markdown-header-analysis)
 - [Contributing](#markdown-header-contributing)
 - [License](#markdown-header-license)
-
-<!-- /TOC -->
 
 ## Setup
 
@@ -219,7 +215,15 @@ you should aim to ensure the number is divisible by the number of worker machine
 
 ### Analysis
 
-TODO
+E³ provides the ability to produce graphs from the data collected from the worker machines as well as the Bitbucket machines.
+
+There are 2 types of analysis scripts included: 
+
+- `gnuplot`
+- `rrdtool`
+
+Calling `./e3/Analyze.py -r <run_name` will produce both types of graphs for a specific run.
+Any produced graphs will be stored in the `e3-home/runs/<run_name>/analysis` directory.
 
 ---
 
