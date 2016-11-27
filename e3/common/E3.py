@@ -117,13 +117,6 @@ class E3:
     def get_stack_ssh_key(self, stack_name):
         return os.path.join(self.get_e3_home(), "instances", stack_name + '.pem')
 
-    def get_configured_es_s3_bucket(self):
-        """
-        :return: preconfigured s3 bucket if found in config file, other returns None
-        :rtype: str or None
-        """
-        return self._config.get('e3').get('es_s3_bucket')
-
     def get_template_dir(self):
         return self._config.get('e3', {}).get('template_dir', None)
 

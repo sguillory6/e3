@@ -86,15 +86,28 @@ class Template:
         self.validate_es_snapshot_id(es_snapshot_id, es_snapshot_bucket)
         return es_snapshot_id
 
+    def get_es_bucket_name(self, snapshot):
+        """
+        Validates and returns an S3 bucket obtained from a snapshot file
+        :param snapshot: the name of the S3 bucket
+        :return: returns the S3 bucket configured within the snapshot file
+        """
+        snapshot_config = e3.load_snapshot(snapshot)['es']
+        es_snapshot_bucket = snapshot_config['bucket']
+        self._log.info("Found S3 Bucket '%s' in snapshot file '%s.json'" % (es_snapshot_bucket, snapshot))
+        self.validate_s3_bucket(es_snapshot_bucket)
+        return es_snapshot_bucket
+
     def validate_ebs_snapshot_id(self, snapshot_id):
         """
         Ensures that the EBS Snapshot is accessible for this AWS account
         :param snapshot_id: the Id of the EBS snapshot to validate
         """
+        self._log.debug("Validating EBS snapshot Id '%s'" % snapshot_id)
         try:
             response = self._aws.ec2.describe_snapshots(SnapshotIds=[snapshot_id])
         except ClientError, e:
-            self.log.debug("Amazon responded with '%s'" % e)
+            self._log.debug("Amazon responded with '%s'" % e)
             raise Exception("Could not find any AWS EBS snapshot with Id '%s'" % snapshot_id)
         self._log.info("EBS snapshot ID '%s' is valid" % snapshot_id)
 
@@ -103,10 +116,11 @@ class Template:
         Ensures that the RDS Snapshot is accessible for this AWS account
         :param snapshot_id: the Id of the RDS snapshot to validate
         """
+        self._log.debug("Validating RDS snapshot Id '%s'" % snapshot_id)
         try:
             response = self._aws.rds.describe_db_snapshots(DBSnapshotIdentifier=snapshot_id, IncludePublic=True)
         except ClientError, e:
-            self.log.debug("Amazon responded with '%s'" % e)
+            self._log.debug("Amazon responded with '%s'" % e)
             raise Exception("Could not find any AWS RDS snapshot with Id '%s'" % snapshot_id)
         self._log.info("RDS snapshot ID '%s' is valid" % snapshot_id)
 
@@ -125,15 +139,19 @@ class Template:
         self._aws.s3_client.get_object(Bucket=bucket, Key="snap-%s.dat" % snapshot)
         self._log.info("ES snapshot '%s' in S3 bucket '%s' is valid" % (snapshot, bucket))
 
-    def get_es_bucket_name(self):
-        if 'ESBucketName' in self._e3_properties['parameters']:
-            return self._e3_properties['parameters']['ESBucketName']
-        else:
-            s3_bucket = e3.get_configured_es_s3_bucket()
-            if s3_bucket is None:
-                return ''
-            else:
-                return s3_bucket
+    def validate_s3_bucket(self, bucket_name):
+        """
+        Ensures that the given S3 bucket is accessible for this AWS account
+        :param bucket_name: the name of the S3 bucket to validate
+        """
+        self._log.debug("Validating S3 bucket '%s'" % bucket_name)
+        try:
+            bucket = self._aws.s3.Bucket(bucket_name)
+            self._aws.s3.meta.client.head_bucket(Bucket=bucket.name)
+        except ClientError, e:
+            self._log.debug("Amazon responded with '%s'" % e)
+            raise Exception("Failed to validate bucket '%s'" % bucket_name)
+        self._log.info("S3 bucket '%s' is valid" % bucket_name)
 
     def get_stack_config(self):
         return self._stack_config

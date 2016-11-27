@@ -48,23 +48,24 @@ class BitbucketDataCenter(Bitbucket):
 
     def before_provision(self):
         self.create_key_pair()
-        self.add_snapshots()
-        self.add_es_bucket()
 
-    def add_es_bucket(self):
-        config = self._stack_config['CloudFormation']
-        config['ESBucketName'] = self.get_es_bucket_name()
-
-    def add_snapshots(self):
         if self._e3_properties['snapshot']:
             snapshot_file_path = os.path.join(e3.get_e3_home(), 'snapshots', self._e3_properties['snapshot'] + ".json")
             if os.path.isfile("%s" % snapshot_file_path):
-                config = self._stack_config['CloudFormation']
-                config['HomeVolumeSnapshotId'] = self.get_ebs_snapshot_id(self._e3_properties['snapshot'])
-                config['DBSnapshotId'] = self.get_rds_snapshot_id(self._e3_properties['snapshot'])
-                config['ESSnapshotId'] = self.get_es_snapshot_id(self._e3_properties['snapshot'])
+                self.add_es_bucket()
+                self.add_snapshots()
             else:
                 raise Exception("Snapshot file '%s' does not exist" % snapshot_file_path)
+
+    def add_es_bucket(self):
+        config = self._stack_config['CloudFormation']
+        config['ESBucketName'] = self.get_es_bucket_name(self._e3_properties['snapshot'])
+
+    def add_snapshots(self):
+        config = self._stack_config['CloudFormation']
+        config['HomeVolumeSnapshotId'] = self.get_ebs_snapshot_id(self._e3_properties['snapshot'])
+        config['DBSnapshotId'] = self.get_rds_snapshot_id(self._e3_properties['snapshot'])
+        config['ESSnapshotId'] = self.get_es_snapshot_id(self._e3_properties['snapshot'])
 
     def print_instance_info(self, file_server):
         self._log.info("Instance [ %s ] is ready" % self._stack_config["StackName"])
