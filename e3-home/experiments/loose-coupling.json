@@ -1,0 +1,198 @@
+{
+  "duration": 600000,
+  "workload": "mixed",
+  "threads": [
+    {
+      "name": "3 nodes, LOCAL mode",
+      "instance": {
+        "name": "local-cache-mode-3",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600",
+          "hibernate.cache.mode=LOCAL"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "3",
+          "ClusterNodeMax": "3",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.2xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeSize": "300",
+          "HomeIops": "10000"
+        }
+      },
+      "worker": {
+        "name": "local-worker-cluster-3",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 20
+        },
+        {
+          "clients": 40
+        },
+        {
+          "clients": 60
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 100
+        }
+      ]
+    },
+    {
+      "name": "6 nodes, LOCAL mode",
+      "instance": {
+        "name": "local-cache-mode-6",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600",
+          "hibernate.cache.mode=LOCAL"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "6",
+          "ClusterNodeMax": "6",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.2xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeSize": "300",
+          "HomeIops": "10000"
+        }
+      },
+      "worker": {
+        "name": "local-worker-cluster-6",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 20
+        },
+        {
+          "clients": 40
+        },
+        {
+          "clients": 60
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 100
+        }
+      ]
+    },
+    {
+      "name": "3 nodes, DISTRIBUTED mode",
+      "instance": {
+        "name": "distributed-cache-mode-3",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600",
+          "hibernate.cache.mode=DISTRIBUTED"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "3",
+          "ClusterNodeMax": "3",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.2xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeSize": "300",
+          "HomeIops": "10000"
+        }
+      },
+      "worker": {
+        "name": "distributed-worker-cluster-3",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 20
+        },
+        {
+          "clients": 40
+        },
+        {
+          "clients": 60
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 100
+        }
+      ]
+    },
+    {
+      "name": "6 nodes, DISTRIBUTED mode",
+      "instance": {
+        "name": "distributed-cache-mode-6",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600",
+          "hibernate.cache.mode=DISTRIBUTED"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "6",
+          "ClusterNodeMax": "6",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.2xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeSize": "300",
+          "HomeIops": "10000"
+        }
+      },
+      "worker": {
+        "name": "distributed-worker-cluster-6",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 20
+        },
+        {
+          "clients": 40
+        },
+        {
+          "clients": 60
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 100
+        }
+      ]
+    }
+  ]
+}
