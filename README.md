@@ -234,6 +234,8 @@ or
 
 Any produced graphs will be stored in the `e3-home/runs/<run_name>/analysis` directory.
 
+For more information on Analysis, see the dedicated [README](./e3/analysis/README.md).
+
 ---
 
 ## Contributing
