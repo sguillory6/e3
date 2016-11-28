@@ -33,7 +33,3 @@ e3:
   # first, and if they exist, they will be used over any templates stored in `s3_bucket`
   #
   #template_dir: '../templates'
-  #
-  # S3 bucket containing Elasticsearch Snapshots
-  #
-  es_s3_bucket: 'bitbucket-server-e3'

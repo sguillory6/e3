@@ -1,4 +1,6 @@
+from common.E3 import e3
 from provisioning.Bitbucket import Bitbucket
+import os
 
 
 class BitbucketServer(Bitbucket):
@@ -20,7 +22,6 @@ class BitbucketServer(Bitbucket):
                 'Subnet': self.get_subnet1,
                 'StartCollectd': 'true',
                 'VPC': self.get_vpc,
-                'HomeVolumeSnapshotId': self.find_ebs_snapshot,
                 'AssociatePublicIpAddress': str(e3_properties['public']).lower()
             },
             "Orchestration": {
@@ -43,6 +44,7 @@ class BitbucketServer(Bitbucket):
 
     def before_provision(self):
         self.create_key_pair()
+        self.add_snapshots()
 
     def print_instance_info(self):
         ip = self.get_ip()
@@ -60,3 +62,12 @@ class BitbucketServer(Bitbucket):
         else:
             ip = self._stack_config["Output"]["PrivateIp"]
         return ip
+
+    def add_snapshots(self):
+        if self._e3_properties['snapshot']:
+            snapshot_file_path = os.path.join(e3.get_e3_home(), 'snapshots', self._e3_properties['snapshot'] + ".json")
+            if os.path.isfile("%s" % snapshot_file_path):
+                config = self._stack_config['CloudFormation']
+                config['HomeVolumeSnapshotId'] = self.get_ebs_snapshot_id(self._e3_properties['snapshot'])
+            else:
+                raise Exception("Snapshot file '%s' does not exist" % snapshot_file_path)

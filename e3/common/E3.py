@@ -117,13 +117,6 @@ class E3:
     def get_stack_ssh_key(self, stack_name):
         return os.path.join(self.get_e3_home(), "instances", stack_name + '.pem')
 
-    def get_configured_es_s3_bucket(self):
-        """
-        :return: preconfigured s3 bucket if found in config file, other returns None
-        :rtype: str or None
-        """
-        return self._config.get('e3').get('es_s3_bucket')
-
     def get_template_dir(self):
         return self._config.get('e3', {}).get('template_dir', None)
 
@@ -134,12 +127,13 @@ class E3:
 
     def load_authentication(self):
         auth_type = self.get_auth_type()
-        auth_config_key = 'aws_auth_%s' % auth_type
-        module_name = self._config.get('e3', {auth_config_key: {'class': None}}).get(auth_config_key).get('class')
-        if module_name:
-            clazz_name = module_name.split(".").pop()
-            security_clazz = getattr(importlib.import_module(module_name), clazz_name)
-            return security_clazz(self)
+        if auth_type:
+            auth_config_key = 'aws_auth_%s' % auth_type
+            module_name = self._config.get('e3', {auth_config_key: {'class': None}}).get(auth_config_key).get('class')
+            if module_name:
+                clazz_name = module_name.split(".").pop()
+                security_clazz = getattr(importlib.import_module(module_name), clazz_name)
+                return security_clazz(self)
 
     def load_experiment(self, experiment):
         exp = os.path.join(self.get_e3_home(), "experiments", "%s.json" % experiment)
@@ -166,6 +160,14 @@ class E3:
 
     def load_run(self, run_name):
         run = os.path.join(self.get_e3_home(), "runs", run_name, "%s.json" % run_name)
+        if os.path.exists(run):
+            with open(run, "r") as instance_file:
+                return json.loads(instance_file.read())
+        else:
+            logging.error("%s: does not exist", run)
+
+    def load_snapshot(self, snapshot_name):
+        run = os.path.join(self.get_e3_home(), "snapshots", "%s.json" % snapshot_name)
         if os.path.exists(run):
             with open(run, "r") as instance_file:
                 return json.loads(instance_file.read())
