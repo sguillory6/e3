@@ -4,6 +4,7 @@ import json
 import logging
 import logging.config
 import os
+import re
 import time
 from threading import Thread
 
@@ -11,6 +12,8 @@ import click
 import requests
 import spur
 import traceback
+
+from progressbar import ProgressBar, Percentage, Bar
 from spur.results import ExecutionResult
 import sys
 
@@ -193,9 +196,40 @@ class RunThread(Thread):
                     break
 
             stage_dir = "%s/%s/stage-%s" % (self._run_config['worker_run_dir'], self._run_name, worker_stage.key)
-            self.run_command(worker, ['rm', "-rf", stage_dir])
-            tmp_dir = "%s/tmp/*" % self._run_config['data_dir']
-            self.run_command(worker, ['rm', "-rf", tmp_dir])
+            self.clean_folder(stage_dir, worker)
+            tmp_dir = "%s/tmp" % self._run_config['data_dir']
+            self.clean_folder(tmp_dir, worker)
+
+    def dir_exists(self, server, remote_file_name):
+        return self.run_command(server, [
+            'sudo', 'sh', '-c', 'test -d "%s"' % remote_file_name
+        ], is_sudo=True).return_code == 0
+
+    def clean_folder(self, folder_to_clean, worker):
+        if not self.dir_exists(worker, folder_to_clean):
+            return
+
+        to_be_deleted = self.run_command(worker, [
+            'sudo', 'sh', '-c', 'find %s -maxdepth 1 -type d' % folder_to_clean
+        ], is_sudo=True).output
+
+        if len(to_be_deleted) > 0:
+            to_be_deleted = filter(lambda name: len(name) > 1 and name != folder_to_clean, to_be_deleted.split('\r\n'))
+            total = len(to_be_deleted)
+            if total > 0:
+                if len(folder_to_clean) > 20:
+                    folder_name = re.sub(r'^(.{7}).*(.{10})$', '\g<1>...\g<2>', folder_to_clean)
+                else:
+                    folder_name = folder_to_clean.ljust(20)
+                bar = ProgressBar(widgets=[
+                    'Cleaning: %s' % folder_name, ' ', Percentage(), ' ', Bar()
+                ], maxval=total).start()
+                count = 1
+                for delete_me in to_be_deleted:
+                    bar.update(count)
+                    self.run_command(worker, ['sudo', 'rm', '-rf', delete_me], is_sudo=True)
+                    count += 1
+                bar.finish()
 
     def distribute_grinder(self, worker_stage):
         self._log.info("Distributing grinder to workers")
@@ -323,12 +357,13 @@ class RunThread(Thread):
                     return False
         return True
 
-    def run_command(self, worker_node, cmd, cwd=None):
+    def run_command(self, worker_node, cmd, cwd=None, is_sudo=False):
         """
         Executes the specified command on a remote node
         :param worker_node: The node on which to execute the command
         :param cmd: The command to execute
         :param cwd: The working folder from which to launch the command
+        :param is_sudo: Does the comment include sudo
         :return: The process exit code
         :rtype: ExecutionResult
         """
@@ -336,8 +371,15 @@ class RunThread(Thread):
             run_command = cmd.split(" ")
         else:
             run_command = cmd
-        result = worker_node.shell.run(run_command, allow_error=True, cwd=cwd, stderr=worker_node.logger,
-                                       stdout=worker_node.logger)
+        args = {
+            "allow_error": True,
+            "cwd": cwd,
+            "stderr": worker_node.logger,
+            "stdout": worker_node.logger
+        }
+        if is_sudo:
+            args["use_pty"] = True
+        result = worker_node.shell.run(run_command, **args)
         self._log.debug("%s -- cwd: %s, exit code: %d, instance: %s, user_host: %s, stdout: \"%s\", stderr: \"%s\"",
                         " ".join(run_command), cwd, result.return_code, worker_node.instance, worker_node.user_host,
                         result.output.rstrip(), result.stderr_output.rstrip())
