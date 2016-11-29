@@ -202,7 +202,7 @@ class RunThread(Thread):
 
     def dir_exists(self, server, remote_file_name):
         return self.run_command(server, [
-            'sudo', 'sh', '-c', 'test -e "%s"' % remote_file_name
+            'sudo', 'sh', '-c', 'test -d "%s"' % remote_file_name
         ], is_sudo=True).return_code == 0
 
     def clean_folder(self, folder_to_clean, worker):
