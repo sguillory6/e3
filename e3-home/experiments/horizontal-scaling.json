@@ -7,7 +7,7 @@
       "instance": {
         "name": "1-node",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600"
@@ -68,7 +68,7 @@
       "instance": {
         "name": "2-node",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600"
@@ -129,7 +129,7 @@
       "instance": {
         "name": "3-node",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600"
@@ -190,7 +190,7 @@
       "instance": {
         "name": "4-node",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600"
@@ -251,7 +251,7 @@
       "instance": {
         "name": "5-node",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600"
@@ -312,7 +312,7 @@
       "instance": {
         "name": "6-node",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600"
@@ -373,7 +373,7 @@
       "instance": {
         "name": "7-node",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600"
@@ -434,7 +434,7 @@
       "instance": {
         "name": "8-node",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600"
