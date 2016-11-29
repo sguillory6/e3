@@ -57,18 +57,20 @@ class Template:
         :param snapshot: the name of the snapshot file containing the EBS snapshot Id
         :return: returns a valid EBS snapshot Id
         """
-        ebs_snapshot_id = e3.load_snapshot(snapshot)['ebs']
+        ebs_snapshot_id = e3.load_snapshot(snapshot)['ebs'][self._aws.region]
         self._log.info("Found EBS snapshot ID '%s' in snapshot file '%s.json'" % (ebs_snapshot_id, snapshot))
         self.validate_ebs_snapshot_id(ebs_snapshot_id)
         return ebs_snapshot_id
 
     def get_rds_snapshot_id(self, snapshot):
         """
-        Validates and returns a RDS snapshot ID obtained from a snapshot file
+        Validates and returns a RDS snapshot ID created from a snapshot file and current region
         :param snapshot: the name of the snapshot file containing the RDS snapshot Id
         :return: returns a valid RDS snapshot Id
         """
-        rds_snapshot_id = e3.load_snapshot(snapshot)['rds']
+        rds_config = e3.load_snapshot(snapshot)['rds']
+        rds_snapshot_id = "arn:aws:rds:%s:%s:snapshot:%s" % (self._aws.region, rds_config['account'], rds_config['id'])
+
         self._log.info("Found RDS snapshot ID '%s' in snapshot file '%s.json'" % (rds_snapshot_id, snapshot))
         self.validate_rds_snapshot_id(rds_snapshot_id)
         return rds_snapshot_id

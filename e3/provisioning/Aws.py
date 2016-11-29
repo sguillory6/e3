@@ -10,6 +10,7 @@ class Aws:
     s3 = None
     s3_client = None
     auto_scaling = None
+    region = None
 
     def __init__(self):
         bc_session = get_session()
@@ -26,3 +27,4 @@ class Aws:
         self.s3 = self._session.resource("s3")
         self.s3_client = self._session.client("s3")
         self.auto_scaling = self._session.client('autoscaling')
+        self.region = self._session.region_name
