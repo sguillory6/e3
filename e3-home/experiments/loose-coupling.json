@@ -7,7 +7,7 @@
       "instance": {
         "name": "local-cache-mode-3",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600",
@@ -55,7 +55,7 @@
       "instance": {
         "name": "local-cache-mode-6",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600",
@@ -103,7 +103,7 @@
       "instance": {
         "name": "distributed-cache-mode-3",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600",
@@ -151,7 +151,7 @@
       "instance": {
         "name": "distributed-cache-mode-6",
         "version": "4.11.0",
-        "snapshot": "e3-medium",
+        "snapshot": "e3-small",
         "template": "BitbucketDataCenter",
         "properties": [
           "db.schema.lock.maxWait=600",

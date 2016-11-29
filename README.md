@@ -135,7 +135,7 @@ Snapshot descriptor files are used to describe a Bitbucket dataset.
 They are stored in [`e3-home/snapshots`](./e3-home/snapshots).
 Atlassian provides a number of default snapshots:
 
-- [`e3-medium`](./e3-home/snapshots/e3-medium.json)
+- [`e3-small`](./e3-home/snapshots/e3-small.json)
 - [`bitbucket-e3-small`](./e3-home/snapshots/bitbucket-e3-small.json)
 - [`bitbucket-e3-medium`](./e3-home/snapshots/bitbucket-e3-medium.json)
 
@@ -174,15 +174,15 @@ You will then need to configure the snapshot fields for EBS (git repositories), 
 The following example configuration specifies snapshots taken from a Bitbucket Data Center instance.
 ```json
 "ebs": {
-    "ap-southeast-2": "snap-5387b4a1",
+    "ap-southeast-2": "snap-4ee80fde",
     "us-east-1": "snap-25e718aa"
 },
 "rds": {
     "account": "098706035825",
-    "id": "e3-medium"
+    "id": "e3-small"
 },
 "es": {
-    "id" : "e3-medium",
+    "id" : "e3-small",
     "bucket": "bitbucket-server-e3"
 }
 ```
