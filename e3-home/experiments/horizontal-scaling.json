@@ -1,0 +1,494 @@
+{
+  "duration": 300000,
+  "workload": "mixed",
+  "threads": [
+    {
+      "name": "1-node",
+      "instance": {
+        "name": "1-node",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "1",
+          "ClusterNodeMax": "1",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.10xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeIops": "5000"
+        }
+      },
+      "worker": {
+        "name": "1-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 120
+        },
+        {
+          "clients": 160
+        },
+        {
+          "clients": 200
+        },
+        {
+          "clients": 240
+        },
+        {
+          "clients": 280
+        },
+        {
+          "clients": 320
+        },
+        {
+          "clients": 360
+        },
+        {
+          "clients": 400
+        }
+      ]
+    },
+    {
+      "name": "2-node",
+      "instance": {
+        "name": "2-node",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "2",
+          "ClusterNodeMax": "2",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.10xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeIops": "5000"
+        }
+      },
+      "worker": {
+        "name": "2-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 120
+        },
+        {
+          "clients": 160
+        },
+        {
+          "clients": 200
+        },
+        {
+          "clients": 240
+        },
+        {
+          "clients": 280
+        },
+        {
+          "clients": 320
+        },
+        {
+          "clients": 360
+        },
+        {
+          "clients": 400
+        }
+      ]
+    },
+    {
+      "name": "3-node",
+      "instance": {
+        "name": "3-node",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "3",
+          "ClusterNodeMax": "3",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.10xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeIops": "5000"
+        }
+      },
+      "worker": {
+        "name": "3-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 120
+        },
+        {
+          "clients": 160
+        },
+        {
+          "clients": 200
+        },
+        {
+          "clients": 240
+        },
+        {
+          "clients": 280
+        },
+        {
+          "clients": 320
+        },
+        {
+          "clients": 360
+        },
+        {
+          "clients": 400
+        }
+      ]
+    },
+    {
+      "name": "4-node",
+      "instance": {
+        "name": "4-node",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "4",
+          "ClusterNodeMax": "4",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.10xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeIops": "5000"
+        }
+      },
+      "worker": {
+        "name": "4-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 120
+        },
+        {
+          "clients": 160
+        },
+        {
+          "clients": 200
+        },
+        {
+          "clients": 240
+        },
+        {
+          "clients": 280
+        },
+        {
+          "clients": 320
+        },
+        {
+          "clients": 360
+        },
+        {
+          "clients": 400
+        }
+      ]
+    },
+    {
+      "name": "5-node",
+      "instance": {
+        "name": "5-node",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "5",
+          "ClusterNodeMax": "5",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.10xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeIops": "5000"
+        }
+      },
+      "worker": {
+        "name": "5-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 120
+        },
+        {
+          "clients": 160
+        },
+        {
+          "clients": 200
+        },
+        {
+          "clients": 240
+        },
+        {
+          "clients": 280
+        },
+        {
+          "clients": 320
+        },
+        {
+          "clients": 360
+        },
+        {
+          "clients": 400
+        }
+      ]
+    },
+    {
+      "name": "6-node",
+      "instance": {
+        "name": "6-node",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "6",
+          "ClusterNodeMax": "6",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.10xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeIops": "5000"
+        }
+      },
+      "worker": {
+        "name": "6-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 120
+        },
+        {
+          "clients": 160
+        },
+        {
+          "clients": 200
+        },
+        {
+          "clients": 240
+        },
+        {
+          "clients": 280
+        },
+        {
+          "clients": 320
+        },
+        {
+          "clients": 360
+        },
+        {
+          "clients": 400
+        }
+      ]
+    },
+    {
+      "name": "7-node",
+      "instance": {
+        "name": "7-node",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "7",
+          "ClusterNodeMax": "7",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.10xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeIops": "5000"
+        }
+      },
+      "worker": {
+        "name": "7-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 120
+        },
+        {
+          "clients": 160
+        },
+        {
+          "clients": 200
+        },
+        {
+          "clients": 240
+        },
+        {
+          "clients": 280
+        },
+        {
+          "clients": 320
+        },
+        {
+          "clients": 360
+        },
+        {
+          "clients": 400
+        }
+      ]
+    },
+    {
+      "name": "8-node",
+      "instance": {
+        "name": "8-node",
+        "version": "4.11.0",
+        "snapshot": "e3-medium",
+        "template": "BitbucketDataCenter",
+        "properties": [
+          "db.schema.lock.maxWait=600"
+        ],
+        "parameters": {
+          "ClusterNodeMin": "8",
+          "ClusterNodeMax": "8",
+          "ClusterNodeInstanceType": "c3.2xlarge",
+          "ElasticsearchInstanceType": "m3.2xlarge.elasticsearch",
+          "FileServerInstanceType": "m4.10xlarge",
+          "DBInstanceClass": "db.r3.2xlarge",
+          "HomeVolumeType": "Provisioned IOPS",
+          "HomeIops": "5000"
+        }
+      },
+      "worker": {
+        "name": "8-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "10"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40
+        },
+        {
+          "clients": 80
+        },
+        {
+          "clients": 120
+        },
+        {
+          "clients": 160
+        },
+        {
+          "clients": 200
+        },
+        {
+          "clients": 240
+        },
+        {
+          "clients": 280
+        },
+        {
+          "clients": 320
+        },
+        {
+          "clients": 360
+        },
+        {
+          "clients": 400
+        }
+      ]
+    }
+  ]
+}
