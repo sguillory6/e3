@@ -16,7 +16,7 @@ class Snapshot:
     Connects to a Bitbucket Server instance and generates a json file representing the data on the instance
     """
     def __init__(self, url, key_file, username, password, max_project, max_repo, max_branch, max_user, distribution,
-                 distribution_factor, description, name, ebs, rds, es, es_bucket):
+                 distribution_factor, description, name):
         self.url = url
         self.key_file = key_file
         self.username = username
@@ -30,10 +30,6 @@ class Snapshot:
         self.description = description
         self.name = name
         self.credentials = (username, password)
-        self.ebs = ebs
-        self.rds = rds
-        self.es = es
-        self.es_bucket = es_bucket
         self.e3_home = os.path.join(os.path.realpath(os.path.dirname(__file__)),  "..", "..", "e3-home")
         self.output_file = os.path.join(self.e3_home, "snapshots", name + ".json")
         # Seed the random number generator so that subsequent runs will apply an identical weight to snapshots.
@@ -51,11 +47,14 @@ class Snapshot:
         users = self.generate_users()
         snapshot = {"name": self.name,
                     "description": self.description,
-                    "ebs": self.ebs,
-                    "rds": self.rds,
+                    "ebs": "TODO",
+                    "rds": {
+                        "account": "TODO",
+                        "id": "TODO",
+                    },
                     "es": {
-                        "snapshot": self.es,
-                        "bucket": self.es_bucket
+                        "snapshot": "TODO",
+                        "bucket": "TODO"
                     },
                     "projects": self.projects,
                     "users": users}
@@ -181,14 +180,10 @@ class Snapshot:
               default="1")
 @click.option('--description', help="Snapshot description", default="Default")
 @click.option('--name', help="Snapshot name", default="Default")
-@click.option('--ebs', help="The EBS snapshot ID of the instance", default="TODO")
-@click.option('--rds', help="The RDS snapshot ID of the instance", default="TODO")
-@click.option('--es', help="The ES snapshot ID of the instance", default="TODO")
-@click.option('--es-bucket', help="The S3 bucket that contains the Elastichsearch Snapshot", default="TODO")
 def command(url, key_file, username, password, max_branch, max_repo, max_project, max_user, distribution,
-            distribution_factor, description, name, ebs, rds, es, es_bucket):
+            distribution_factor, description, name):
     Snapshot(url, key_file, username, password, max_project, max_repo, max_branch, max_user, distribution,
-             distribution_factor, description, name, ebs, rds, es, es_bucket).generate()
+             distribution_factor, description, name).generate()
 
 
 if __name__ == '__main__':
