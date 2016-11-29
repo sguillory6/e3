@@ -15,8 +15,9 @@ class Snapshot:
     """
     Connects to a Bitbucket Server instance and generates a json file representing the data on the instance
     """
+
     def __init__(self, url, key_file, username, password, max_project, max_repo, max_branch, max_user, distribution,
-                 distribution_factor, description, name):
+                 distribution_factor, description, name, aws):
         self.url = url
         self.key_file = key_file
         self.username = username
@@ -30,8 +31,9 @@ class Snapshot:
         self.description = description
         self.name = name
         self.credentials = (username, password)
-        self.e3_home = os.path.join(os.path.realpath(os.path.dirname(__file__)),  "..", "..", "e3-home")
+        self.e3_home = os.path.join(os.path.realpath(os.path.dirname(__file__)), "..", "..", "e3-home")
         self.output_file = os.path.join(self.e3_home, "snapshots", name + ".json")
+        self.aws = aws
         # Seed the random number generator so that subsequent runs will apply an identical weight to snapshots.
         # 42 is chosen because it is the answer to the ultimate question of life, the universe, and everything.
         random.seed(42)
@@ -47,17 +49,21 @@ class Snapshot:
         users = self.generate_users()
         snapshot = {"name": self.name,
                     "description": self.description,
-                    "ebs": "TODO",
-                    "rds": {
-                        "account": "TODO",
-                        "id": "TODO",
-                    },
-                    "es": {
-                        "snapshot": "TODO",
-                        "bucket": "TODO"
-                    },
                     "projects": self.projects,
                     "users": users}
+        if self.aws == "true":
+            aws_scaffold = {
+                "ebs": "TODO",
+                "rds": {
+                    "account": "TODO",
+                    "id": "TODO"
+                },
+                "es": {
+                    "snapshot": "TODO",
+                    "bucket": "TODO"
+                }
+            }
+            snapshot.update(aws_scaffold)
         with open(self.output_file, 'w') as jsonFile:
             json.dump(snapshot, jsonFile, indent=4, sort_keys=True)
 
@@ -71,7 +77,9 @@ class Snapshot:
         keymap = open(os.path.join(self.e3_home, "keys", self.key_file + ".json"))
         keys = json.loads(keymap.read())
 
-        prefilter_usernames = [username['name'] for username in requests.get('%s/rest/api/1.0/users?limit=%s' % (self.url, self.max_user), auth=self.credentials).json()['values']]
+        prefilter_usernames = [username['name'] for username in
+                               requests.get('%s/rest/api/1.0/users?limit=%s' % (self.url, self.max_user),
+                                            auth=self.credentials).json()['values']]
         usernames = filter(lambda x: not x.startswith("admin"), prefilter_usernames)
 
         users = []
@@ -180,10 +188,11 @@ class Snapshot:
               default="1")
 @click.option('--description', help="Snapshot description", default="Default")
 @click.option('--name', help="Snapshot name", default="Default")
+@click.option('--aws', help="Set to true to scaffold the AWS specific snapshot configuration", default="false")
 def command(url, key_file, username, password, max_branch, max_repo, max_project, max_user, distribution,
-            distribution_factor, description, name):
+            distribution_factor, description, name, aws):
     Snapshot(url, key_file, username, password, max_project, max_repo, max_branch, max_user, distribution,
-             distribution_factor, description, name).generate()
+             distribution_factor, description, name, aws).generate()
 
 
 if __name__ == '__main__':
