@@ -4,14 +4,13 @@ import os
 import click
 import glob
 
-from common.Utils import open_with_external_tool
-
 if __name__ == "__main__":
     import sys
     sys.path.append(os.path.realpath(os.path.join(__file__, "..", "..", "..")))
 
 from common.E3 import e3
 from common.TemplateEngine import TemplateEngine
+from common.Utils import open_with_external_tool
 
 
 def get_image_layout(analysis_root):
@@ -30,7 +29,8 @@ def get_image_layout(analysis_root):
                 node_set.add(node)
                 node_dir = os.path.join(stage_dir, node)
                 for img in glob.glob1(node_dir, "*.png"):
-                    key = img[len(node) + 1:-4]
+                    prefix = "%s-%s-%s" % (thread, stage, node)
+                    key = img[len(prefix) + 1:-4]
                     if key not in img_dict[thread][stage].keys():
                         img_dict[thread][stage][key] = []
                     img_dict[thread][stage][key].append(node)
@@ -44,6 +44,8 @@ def experiment_report(run):
         'load',
         'cpu-all-average',
         'bitbucket-hosting-tickets',
+        'hazelcast-operations',
+        'hazelcast-events',
         'processes-count-git',
         'processes-resident-git',
         'memory',

@@ -22,7 +22,7 @@
                     <td>{{ metric }}</td>
                     {% for node in nodes %}
                     {% if data[metric] and node in data[metric] %}
-                        <td><img src="{{ thread }}/{{ stage }}/{{ node }}/{{node}}-{{metric}}.png"></td>
+                        <td><img src="{{ thread }}/{{ stage }}/{{ node }}/{{thread}}-{{stage}}-{{node}}-{{metric}}.png"></td>
                     {% else %}
                         <td></td>
                     {% endif %}
@@ -35,7 +35,7 @@
                 <td>{{ metric }}</td>
                 {% for node in nodes %}
                 {% if data[metric] and node in data[metric] %}
-                <td><img src="{{ thread }}/{{ stage }}/{{ node }}/{{node}}-{{metric}}.png"></td>
+                <td><img src="{{ thread }}/{{ stage }}/{{ node }}/{{thread}}-{{stage}}-{{node}}-{{metric}}.png"></td>
                 {% else %}
                 <td></td>
                 {% endif %}

@@ -15,6 +15,8 @@ from analysis.rrdtool.types.BitbucketJMX import BitbucketJmx
 from analysis.rrdtool.types.Cpu import Cpu
 from analysis.rrdtool.types.Disk import Disk
 from analysis.rrdtool.types.GenericJmx import GenericJmx
+from analysis.rrdtool.types.HazelcastEventServiceJmx import HazelcastEventServiceJmx
+from analysis.rrdtool.types.HazelcastOperationServiceJmx import HazelcastOperationServiceJmx
 from analysis.rrdtool.types.HibernateJmx import HibernateJmx
 from analysis.rrdtool.types.HikariJmx import HikariJmx
 from analysis.rrdtool.types.Interface import Interface
@@ -98,44 +100,42 @@ def graph_experiment(run):
 
 
 def graph_node(analysis_root, node, run, stage_end, stage_logical_name, stage_start, thread):
-    message = "Graphing node '%s' for stage '%s' of thread '%s' of run '%s'" % \
-              (node, stage_logical_name, thread, run)
-    logging.info(message)
-    logging.info("-".center(len(message), '-'))
+    logging.info("Graphing node '%s' for stage '%s' of thread '%s' of run '%s'" %
+                 (node, stage_logical_name, thread, run))
     graph_directory = os.path.join(analysis_root, thread, stage_logical_name, node)
     if not os.path.exists(graph_directory):
         os.makedirs(graph_directory)
     rrd_data_directory = os.path.join(e3.get_run_dir(run), thread, node, 'collectd-rrd', 'localhost')
-    if not os.path.exists(rrd_data_directory):
-        logging.warning("'%s' does not exist", os.path.basename(rrd_data_directory))
-    else:
+    if os.path.exists(rrd_data_directory):
+        node_name = "%s-%s-%s" % (thread, stage_logical_name, node)
+
         # Draw Load graph
         load_grapher = Load(graph_directory, rrd_data_directory)
-        load_grapher.render(node, stage_start, stage_end)
+        load_grapher.render(node_name, stage_start, stage_end)
 
         # Draw CPU graph
         cpu_grapher = Cpu(graph_directory, rrd_data_directory)
-        cpu_grapher.render(node, stage_start, stage_end)
+        cpu_grapher.render(node_name, stage_start, stage_end)
 
         # Draw Memory graphs
         mem_grapher = Memory(graph_directory, rrd_data_directory)
-        mem_grapher.render(node, stage_start, stage_end)
+        mem_grapher.render(node_name, stage_start, stage_end)
 
         # # Draw eth0 network graph
         network_grapher = Interface(graph_directory, rrd_data_directory)
-        network_grapher.render(node, stage_start, stage_end)
+        network_grapher.render(node_name, stage_start, stage_end)
 
         # Draw disk graph
         disk_grapher = Disk(graph_directory, rrd_data_directory)
-        disk_grapher.render(node, stage_start, stage_end)
+        disk_grapher.render(node_name, stage_start, stage_end)
 
         # Swap usage
         swap_grapher = Swap(graph_directory, rrd_data_directory)
-        swap_grapher.render(node, stage_start, stage_end)
+        swap_grapher.render(node_name, stage_start, stage_end)
 
         # Processes
         processes_grapher = Processes(graph_directory, rrd_data_directory)
-        processes_grapher.render(node, stage_start, stage_end)
+        processes_grapher.render(node_name, stage_start, stage_end)
 
         #
         # JMX graphs
@@ -143,27 +143,33 @@ def graph_node(analysis_root, node, run, stage_end, stage_logical_name, stage_st
 
         # Generic JMX graphs
         generic_jmx_grapher = GenericJmx(graph_directory, rrd_data_directory)
-        generic_jmx_grapher.render(node, stage_start, stage_end)
+        generic_jmx_grapher.render(node_name, stage_start, stage_end)
 
         # Tomcat JMX graphs
         tomcat_jmx_grapher = TomcatJmx(graph_directory, rrd_data_directory)
-        tomcat_jmx_grapher.render(node, stage_start, stage_end)
+        tomcat_jmx_grapher.render(node_name, stage_start, stage_end)
 
         # Bitbucket JMX graphs
         bitbucket_jmx_grapher = BitbucketJmx(graph_directory, rrd_data_directory)
-        bitbucket_jmx_grapher.render(node, stage_start, stage_end)
+        bitbucket_jmx_grapher.render(node_name, stage_start, stage_end)
 
         # Threadpool JMX graphs
         threadpool_jmx_grapher = ThreadpoolJmx(graph_directory, rrd_data_directory)
-        threadpool_jmx_grapher.render(node, stage_start, stage_end)
+        threadpool_jmx_grapher.render(node_name, stage_start, stage_end)
+
+        # Hazelcast JMX graphs
+        hazelcast_jmx_operations_grapher = HazelcastOperationServiceJmx(graph_directory, rrd_data_directory)
+        hazelcast_jmx_operations_grapher.render(node_name, stage_start, stage_end)
+        hazelcast_jmx_events_grapher = HazelcastEventServiceJmx(graph_directory, rrd_data_directory)
+        hazelcast_jmx_events_grapher.render(node_name, stage_start, stage_end)
 
         # Hikari JMX graphs
         hikari_jmx_grapher = HikariJmx(graph_directory, rrd_data_directory)
-        hikari_jmx_grapher.render(node, stage_start, stage_end)
+        hikari_jmx_grapher.render(node_name, stage_start, stage_end)
 
         # Hibernate JMX graphs
         hibernate_jmx_grapher = HibernateJmx(graph_directory, rrd_data_directory)
-        hibernate_jmx_grapher.render(node, stage_start, stage_end)
+        hibernate_jmx_grapher.render(node_name, stage_start, stage_end)
 
 
 @click.command()
