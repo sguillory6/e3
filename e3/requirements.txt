@@ -1,3 +1,4 @@
+progressbar
 boto3==1.4.1
 botocore==1.4.62
 click==6.6
