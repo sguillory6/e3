@@ -161,15 +161,15 @@ To generate a new snapshot descriptor you can use the [`Snapshot`](./e3/util/Sna
 
 #### Creating your own dataset in AWS
 
-After you have run the `./util.Snapshot.py` script with the `--aws true` option, you will need to take an[EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html)
- (and possibly[RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.BackingUpAndRestoringAmazonRDSInstances.html#Overview.BackingUpAndRestoringAmazonRDSInstances-Snapshots)
+After you have run the `./util/Snapshot.py` script with the `--aws true` option, you will need to take an [EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html)
+ (and possibly [RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.BackingUpAndRestoringAmazonRDSInstances.html#Overview.BackingUpAndRestoringAmazonRDSInstances-Snapshots)
   and [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/2.3/modules-snapshots.html)) snapshot of your data.
-This is most easily achieved through the use of the Atlassian Bitbucket DIY backup scripts, which come inbuilt when using the Atlassian Bitbucket AMI.
-Alternatively, you can clone the repository from[bitbucket.org](https://bitbucket.org/atlassianlabs/atlassian-bitbucket-diy-backup/overview).
+This is most easily achieved through the use of the Atlassian Bitbucket DIY backup scripts, which come with the Atlassian Bitbucket AMI.
+Alternatively, you can clone the repository from [bitbucket.org](https://bitbucket.org/atlassianlabs/atlassian-bitbucket-diy-backup/overview).
 
-See[Using Bitbucket Server DIY backup in AWS](https://confluence.atlassian.com/bitbucketserver/using-bitbucket-server-diy-backup-in-aws-776640203.html).
+See [Using Bitbucket Server DIY backup in AWS](https://confluence.atlassian.com/bitbucketserver/using-bitbucket-server-diy-backup-in-aws-776640203.html).
 
-You will then need to configure the following snapshot fields in the generated snapshot file in order to use these snapshots in an experiment.
+You will then need to configure the snapshot fields for EBS (git repositories), RDS (database) and ES (search index) in the generated snapshot (see example below)
 
 The following example configuration specifies snapshots taken from a Bitbucket Data Center instance.
 ```json
