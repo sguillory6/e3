@@ -80,10 +80,8 @@ class Graph:
                                '--title', title,
                                self._get_definition(graph['config'], data_dir, stack))
             except rrdtool.OperationalError as ex:
-                traceback.print_exc(file=sys.stderr)
-                logging.error('Failed to generate graph "%s" for node "%s"', graph_name, node_name)
-                logging.error(ex)
-
-        else:
-            logging.warning('Data directory "%s" does not exist, cannot draw "%s" graph for node "%s"',
-                            os.path.basename(data_dir), graph_name, node_name)
+                # Silently skip missing data files
+                if "No such file or directory" not in ex.message:
+                    traceback.print_exc(file=sys.stderr)
+                    logging.error('Failed to generate graph "%s" for node "%s"', graph_name, node_name)
+                    logging.error(ex)
