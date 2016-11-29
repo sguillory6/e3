@@ -42,7 +42,7 @@ experiment = json.loads(open(os.path.join(run_dir, '%s.json' % run)).read())
 
 duration = experiment['duration']
 workload = experiment['workload']
-threads = [thread for thread in os.listdir(run_dir) if thread.startswith('thread-')]
+threads = sorted([thread for thread in os.listdir(run_dir) if thread.startswith('thread-')])
 
 workloads_dir = os.path.join(root, 'workloads')
 
