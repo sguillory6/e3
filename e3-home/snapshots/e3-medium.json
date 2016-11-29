@@ -1,8 +1,14 @@
 {
   "description": "bitbucket default",
   "name": "bitbucket-medium-dataset-100-ssh-users",
-  "ebs": "snap-5387b4a1",
-  "rds": "arn:aws:rds:ap-southeast-2:098706035825:snapshot:e3-medium",
+  "ebs": {
+    "ap-southeast-2": "snap-5387b4a1",
+    "us-east-1": "snap-25e718aa"
+  },
+  "rds": {
+    "account": "098706035825",
+    "id": "e3-medium"
+  },
   "es": {
     "id" : "e3-medium",
     "bucket": "bitbucket-server-e3"
