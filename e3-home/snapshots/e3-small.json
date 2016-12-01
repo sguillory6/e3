@@ -1,16 +1,26 @@
 {
   "description": "bitbucket default",
-  "name": "bitbucket-medium-dataset-100-ssh-users",
+  "name": "bitbucket-small-dataset-100-ssh-users",
   "ebs": {
-    "ap-southeast-2": "snap-4ee80fde",
-    "us-east-1": "snap-25e718aa"
+    "ap-northeast-1": "snap-c529a04b",
+    "ap-northeast-2": "snap-b288845b",
+    "ap-south-1": "snap-0e74b075398eb051f",
+    "ap-southeast-1": "snap-220bf0a7",
+    "ap-southeast-2": "snap-d34f0a43",
+    "eu-central-1": "snap-8845c0f1",
+    "eu-west-1": "snap-cd3373ab",
+    "sa-east-1": "snap-a8bda19f",
+    "us-east-1": "snap-6ff61170",
+    "us-east-2": "snap-0c4d1a43db7804c92",
+    "us-west-1": "snap-3e1686bd",
+    "us-west-2": "snap-4b57a36d"
   },
   "rds": {
     "account": "098706035825",
     "id": "e3-small"
   },
   "es": {
-    "id" : "e3-small",
+    "snapshot" : "e3-small",
     "bucket": "bitbucket-server-e3"
   },
   "projects": [
