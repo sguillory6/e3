@@ -82,7 +82,7 @@ class Template:
         :return: returns a valid ES snapshot Id
         """
         snapshot_config = e3.load_snapshot(snapshot)['es']
-        es_snapshot_id = snapshot_config['id']
+        es_snapshot_id = snapshot_config['snapshot']
         es_snapshot_bucket = snapshot_config['bucket']
         self._log.info("Found ES snapshot ID '%s' in snapshot file '%s.json'" % (es_snapshot_id, snapshot))
         self.validate_es_snapshot_id(es_snapshot_id, es_snapshot_bucket)

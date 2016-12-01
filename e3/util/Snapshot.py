@@ -53,7 +53,9 @@ class Snapshot:
                     "users": users}
         if self.aws == "true":
             aws_scaffold = {
-                "ebs": "TODO",
+                "ebs": {
+                    "ap-southeast-2": "TODO"
+                },
                 "rds": {
                     "account": "TODO",
                     "id": "TODO"
