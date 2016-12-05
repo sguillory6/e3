@@ -5,29 +5,30 @@ import logging
 import logging.config
 import os
 import re
+import sys
 import time
 from threading import Thread
 
 import click
 import requests
 import spur
-import traceback
-
 from progressbar import ProgressBar, Percentage, Bar
 from spur.results import ExecutionResult
-import sys
 
 from common import Utils
 from common.Config import run_config
 from common.E3 import e3
+from common.Utils import LogWrapper
 
 
 class Run:
     """
     This class runs an run as defined in an run file.
     """
+
     def __init__(self, run_name):
         self._log = logging.getLogger('run')
+        logging.getLogger("paramiko").setLevel(logging.WARNING)
         self._run_config = e3.load_run(run_name)
         self._run_name = run_name
         self.number_stages()
@@ -110,14 +111,14 @@ class RunThread(Thread):
      6. Wait until run duration has elapsed
      7. Repeat with the next stage on the queue
     """
+
     def __init__(self, thread, run_name, thread_index):
         self._log = logging.getLogger("run")
         self._run_name = run_name
         self._thread = thread
-        self._thread_name = 'RunThread:%d' % thread_index
         # list of workers that have already had the e3 distribution synced to them
         self._synced_workers = set()
-        Thread.__init__(self, name=self._thread_name)
+        Thread.__init__(self, name='RunThread:%d' % thread_index)
         self._run_config = None
 
     def run(self):
@@ -125,7 +126,7 @@ class RunThread(Thread):
             self.run_stage(self._thread, stage)
 
     def run_stage(self, thread, stage):
-        worker_stage = WorkerStage(thread, stage, self._thread_name)
+        worker_stage = WorkerStage(thread, stage)
 
         self._log.info("Running Stage - worker: %s, workload: %s, instance %s, clients: %d, worker-nodes: %d, "
                        "clients-per-worker: %d, duration %s ms",
@@ -152,6 +153,7 @@ class RunThread(Thread):
         self._log.info("Sanitizing workers")
 
         for worker in worker_stage.worker_nodes:
+            self._log.debug("Sanitizing worker [%s] " % worker.hostname)
             while True:
                 try:
                     # Kill all orphaned git processes
@@ -206,10 +208,11 @@ class RunThread(Thread):
         ], is_sudo=True).return_code == 0
 
     def clean_folder(self, folder_to_clean, worker):
+        self._log.debug("Cleaning folder %s " % folder_to_clean)
         if not self.dir_exists(worker, folder_to_clean):
             return
 
-        to_be_deleted = self.run_command(worker, [
+        to_be_deleted = self.do_run_command(worker, [
             'sudo', 'sh', '-c', 'find %s -maxdepth 1 -type d' % folder_to_clean
         ], is_sudo=True).output
 
@@ -358,12 +361,19 @@ class RunThread(Thread):
         return True
 
     def run_command(self, worker_node, cmd, cwd=None, is_sudo=False):
+        stdout = LogWrapper(worker_node.hostname, LogWrapper.stdout)
+        stderr = LogWrapper(worker_node.hostname, LogWrapper.stderr)
+        return self.do_run_command(worker_node, cmd, cwd, is_sudo, stdout, stderr)
+
+    def do_run_command(self, worker_node, cmd, cwd=None, is_sudo=False, stdout=None, stderr=None):
         """
         Executes the specified command on a remote node
         :param worker_node: The node on which to execute the command
         :param cmd: The command to execute
         :param cwd: The working folder from which to launch the command
         :param is_sudo: Does the comment include sudo
+        :param stdout: The output from stdout will be written here
+        :param stderr:  The output from stderr will be written here
         :return: The process exit code
         :rtype: ExecutionResult
         """
@@ -374,8 +384,8 @@ class RunThread(Thread):
         args = {
             "allow_error": True,
             "cwd": cwd,
-            "stderr": worker_node.logger,
-            "stdout": worker_node.logger
+            "stderr": stderr,
+            "stdout": stdout
         }
         if is_sudo:
             args["use_pty"] = True
@@ -386,13 +396,14 @@ class RunThread(Thread):
         return result
 
     def spawn_command(self, worker_node, cmd, cwd=None):
+        stdout = LogWrapper(worker_node.hostname, LogWrapper.stdout)
+        stderr = LogWrapper(worker_node.hostname, LogWrapper.stderr)
         if type(cmd) is str:
             run_command = cmd.split(" ")
         else:
             run_command = cmd
-        result = worker_node.shell.spawn(run_command, allow_error=True, cwd=cwd, stdout=worker_node.logger,
-                                         stderr=worker_node.logger)
-        self._log.info("%s -- cwd: %s running: %d,  instance: %s, user_host: %s", " ".join(run_command), cwd,
+        result = worker_node.shell.spawn(run_command, allow_error=True, cwd=cwd, stdout=stdout, stderr=stderr)
+        self._log.debug("%s -- cwd: %s running: %d,  instance: %s, user_host: %s", " ".join(run_command), cwd,
                        result.is_running(), worker_node.instance, worker_node.user_host)
 
     def restart_bitbucket(self, worker_stage):
@@ -424,7 +435,7 @@ class RunThread(Thread):
 
 
 class WorkerStage:
-    def __init__(self, thread, stage, name):
+    def __init__(self, thread, stage):
         self._log = logging.getLogger("run")
         self.clients = stage['clients']
         self.instance = thread['instance']
@@ -433,20 +444,19 @@ class WorkerStage:
         self.workload = stage['workload']
         self.key = stage['key']
 
-        self.worker_nodes = self.make_nodes(self.worker['stack']['Name'], name)
-        self.instance_nodes = self.make_nodes(self.instance['stack']['Name'], name)
+        self.worker_nodes = self.make_nodes(self.worker['stack']['Name'])
+        self.instance_nodes = self.make_nodes(self.instance['stack']['Name'])
 
         self.console = self.worker_nodes[0]
         self.clients_per_worker = float(stage['clients']) / len(self.worker_nodes)
 
-    def make_nodes(self, instance_id, name):
+    def make_nodes(self, instance_id):
         nodes = []
         self._log.debug("Loading instance config for instance %s ", instance_id)
         instance_config = e3.load_instance(instance_id)
         self.instance_nodes = []
         for user_host in instance_config['ClusterNodes']:
             if user_host == 'localhost':
-                hostname = 'localhost'
                 shell = spur.LocalShell()
             else:
                 (username, hostname) = user_host.split("@")
@@ -457,48 +467,19 @@ class WorkerStage:
                     missing_host_key=spur.ssh.MissingHostKey.accept,
                     connect_timeout=3600
                 )
-            nodes.append(Node(instance_id, user_host, shell, LogWrapper(name, hostname)))
+            nodes.append(Node(instance_id, user_host, shell))
         return nodes
 
 
 class Node:
-    def __init__(self, instance, user_host, shell, logger):
+    def __init__(self, instance, user_host, shell):
         self.instance = instance
         self.user_host = user_host
         if '@' in user_host:
             self.hostname = user_host.split('@')[1]
         else:
             self.hostname = user_host
-        self.logger = logger
         self.shell = shell
-
-
-class LogWrapper:
-    """
-    Note this class is _not_ threadsafe it wraps a logger with a "write" method so that the output of remote commands
-    can be streamed to the logger
-    """
-    def __init__(self, parent_thread, hostname):
-        self.parent_thread = parent_thread
-        self._log = logging.getLogger("command")
-        self.hostname = hostname
-        self.buffer = []
-
-    def write(self, message):
-        try:
-            if message == '\n':
-                extra_log_arguments = {'parent_thread': str(self.parent_thread), 'hostname': str(self.hostname)}
-                message = "".join(self.buffer)
-                if isinstance(message, unicode):
-                    self._log.info(unicode.decode(message, errors="ignore"), extra=extra_log_arguments)
-                else:
-                    self._log.info(message, extra=extra_log_arguments)
-                self.buffer = []
-            else:
-                self.buffer.append(message)
-        except Exception as ex:
-            traceback.print_exc(file=sys.stderr)
-            print "boom: %s" % ex
 
 
 @click.command()
