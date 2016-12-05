@@ -34,12 +34,16 @@ The `gnuplot` scripts will produce several charts which serve to compare experim
   Note that some tests may throw this metric out of balance: some tests run significantly faster and more often than 
   others. The `scale` value in your `workload` JSON file can help to offset this unbalance.
 
+  ![throughput.png](https://developer.atlassian.com/blog/2016/12/how-we-built-bitbucket-data-center-to-scale/throughput.png)
+
 - **Mean Test Time** - This chart shows the mean time to complete each test _as reported by the worker_. These charts
   can help determine which operations slow down under load. Note that this metric is a _mean_, which means outliers can
   disproportionatley affect this value.
 
 - **Histogram** - This chart shows a Histogram for each experiment thread. It will indicate the contribution to TPS
   of each test in the experiment.
+
+  ![histogram.png](https://developer.atlassian.com/blog/2016/12/how-we-built-bitbucket-data-center-to-scale/histogram-thread-008.png)
 
 ## Stage Summaries
 
