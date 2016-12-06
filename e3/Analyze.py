@@ -25,7 +25,7 @@ def run_rrd_analysis(run_name):
               type=click.Choice(e3.get_runs()), default=e3.get_single_run())
 @click.option('-n', '--nolaunch', flag_value=True, default=False, help="Don't load artifacts in external viewer")
 def command(run, nolaunch):
-    logging.config.fileConfig(e3.get_logging_conf())
+    e3.setup_logging()
 
     if nolaunch:
         disable_external_tool()

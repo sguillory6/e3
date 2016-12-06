@@ -87,7 +87,7 @@ class Gather:
 @click.option('-r', '--run', required=True, help='The experiment run you want to gather',
               type=click.Choice(e3.get_runs()), default=e3.get_single_run())
 def command(run):
-    logging.config.fileConfig(e3.get_logging_conf())
+    e3.setup_logging()
     Gather(run).gather()
 
 if __name__ == '__main__':

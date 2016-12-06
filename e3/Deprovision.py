@@ -54,7 +54,7 @@ class Deprovision:
 @click.option('-n', '--network', required=False, is_flag=True, default=False,
               help='When specified the network associated with the stack will be retained')
 def command(run, network):
-    logging.config.fileConfig(e3.get_logging_conf())
+    e3.setup_logging()
     Deprovision(run).deprovision(network)
 
 if __name__ == '__main__':

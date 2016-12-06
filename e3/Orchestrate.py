@@ -69,7 +69,7 @@ class Orchestrate:
               type=click.Choice(e3.get_networks()))
 @click.option('-r', '--retain', required=False, help='Retain any provisioned aws resources', default=True)
 def command(experiment, network, retain):
-    logging.config.fileConfig(e3.get_logging_conf())
+    e3.setup_logging()
     Orchestrate(experiment, network, retain).run()
 
 

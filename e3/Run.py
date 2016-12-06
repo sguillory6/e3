@@ -4,7 +4,6 @@ import json
 import logging
 import logging.config
 import os
-import re
 import sys
 import time
 from threading import Thread
@@ -12,7 +11,6 @@ from threading import Thread
 import click
 import requests
 import spur
-from progressbar import ProgressBar, Percentage, Bar
 from spur.results import ExecutionResult
 
 from common import Utils
@@ -28,7 +26,6 @@ class Run:
 
     def __init__(self, run_name):
         self._log = logging.getLogger('run')
-        logging.getLogger("paramiko").setLevel(logging.WARNING)
         self._run_config = e3.load_run(run_name)
         self._run_name = run_name
         self.number_stages()
@@ -220,19 +217,8 @@ class RunThread(Thread):
             to_be_deleted = filter(lambda name: len(name) > 1 and name != folder_to_clean, to_be_deleted.split('\r\n'))
             total = len(to_be_deleted)
             if total > 0:
-                if len(folder_to_clean) > 20:
-                    folder_name = re.sub(r'^(.{7}).*(.{10})$', '\g<1>...\g<2>', folder_to_clean)
-                else:
-                    folder_name = folder_to_clean.ljust(20)
-                bar = ProgressBar(widgets=[
-                    'Cleaning: %s' % folder_name, ' ', Percentage(), ' ', Bar()
-                ], maxval=total).start()
-                count = 1
                 for delete_me in to_be_deleted:
-                    bar.update(count)
                     self.run_command(worker, ['sudo', 'rm', '-rf', delete_me], is_sudo=True)
-                    count += 1
-                bar.finish()
 
     def distribute_grinder(self, worker_stage):
         self._log.info("Distributing grinder to workers")
@@ -404,7 +390,7 @@ class RunThread(Thread):
             run_command = cmd
         result = worker_node.shell.spawn(run_command, allow_error=True, cwd=cwd, stdout=stdout, stderr=stderr)
         self._log.debug("%s -- cwd: %s running: %d,  instance: %s, user_host: %s", " ".join(run_command), cwd,
-                       result.is_running(), worker_node.instance, worker_node.user_host)
+                        result.is_running(), worker_node.instance, worker_node.user_host)
 
     def restart_bitbucket(self, worker_stage):
         for instance in worker_stage.instance_nodes:
@@ -486,7 +472,7 @@ class Node:
 @click.option('-r', '--run', required=True, help='The experiment run you want to execute',
               type=click.Choice(e3.get_runs()), default=e3.get_single_run())
 def command(run):
-    logging.config.fileConfig(e3.get_logging_conf())
+    e3.setup_logging()
     run_inst = Run(run)
     run_inst.run()
 
