@@ -1,10 +1,14 @@
-import datetime
 import logging
 import os
 import subprocess
+import sys
+import threading
 import time
+import traceback
 
+import datetime
 import requests
+import spur
 from requests.exceptions import ConnectTimeout, ConnectionError
 
 FNULL = open(os.devnull, 'w')
@@ -26,25 +30,23 @@ def rsync(ec2_ip, key_file, ec2_file, local_file, upload=True):
 
 
 def rsync_local(source, destination):
-    subprocess.call(["rsync", "-vazrq", source, destination], stderr=FNULL)
+    stdout = LogWrapper("localhost", LogWrapper.stdout)
+    stderr = LogWrapper("localhost", LogWrapper.stderr)
+    spur.LocalShell().run(["rsync", "-vazrq", source, destination], stderr=stderr, stdout=stdout, allow_error=True)
 
 
 def rsync_remote(ec2_ip, key_file, ec2_file, local_file, upload=False):
-    remote_file = "%s:%s" % (ec2_ip, ec2_file)
+    stdout = LogWrapper("localhost", LogWrapper.stdout)
+    stderr = LogWrapper("localhost", LogWrapper.stderr)
 
-    # print 'ec2_file=%s' % ec2_file
-    # print 'local_file=%s' % local_file
+    remote_file = "%s:%s" % (ec2_ip, ec2_file)
 
     source = local_file if upload else remote_file
     destination = remote_file if upload else local_file
 
     command = ["rsync", "-azrq", "-e",
-                    "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" % key_file, source,
-                    destination]
-    print " ".join(map(quote_if_necessary, command))
-
-    # TODO this method does not fail if rsync fails. Update this to fail and report an error
-    subprocess.call(command, stderr=FNULL)
+               "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" % key_file, source, destination]
+    spur.LocalShell().run(command, stderr=stderr, stdout=stdout, allow_error=True)
 
 
 def now():
@@ -102,12 +104,6 @@ def poll_url(url, max_poll_time_seconds, success_callback):
                 return False
 
 
-def run_script_over_ssh(user_host, key_file, file_name):
-    subprocess.call(["ssh", "-n", "-f", "-i%s" % key_file, "-t", "-t", "-o UserKnownHostsFile=/dev/null",
-                     "-o StrictHostKeyChecking=no", user_host,
-                     "bash -c 'nohup sh %s > output.out 2> output.err < /dev/null'" % file_name])
-
-
 def try_open_with(utility, resources_to_open):
     """
     Try and open the specified resource with the specified utility
@@ -129,3 +125,36 @@ def try_open_with(utility, resources_to_open):
         return True
     except StandardError:  # The base exception for most exception types
         return False
+
+
+class LogWrapper:
+    stdout = "STDOUT"
+    stderr = "STDERR"
+    """
+    Note this class is _not_ threadsafe it wraps a logger with a "write" method so that the output of remote commands
+    can be streamed to the logger
+    """
+
+    def __init__(self, hostname, name):
+        self.parent_thread = threading.currentThread().getName()
+        self._log = logging.getLogger("command")
+        self.hostname = hostname
+        self.buffer = []
+        self.extra_log_arguments = {'parent_thread': str(self.parent_thread),
+                                    'hostname': str(self.hostname),
+                                    'out_name': name}
+
+    def write(self, message):
+        try:
+            if message == '\n':
+                message = "".join(self.buffer)
+                if isinstance(message, unicode):
+                    self._log.debug(unicode.decode(message, errors="ignore"), extra=self.extra_log_arguments)
+                else:
+                    self._log.debug(message, extra=self.extra_log_arguments)
+                self.buffer = []
+            else:
+                self.buffer.append(message)
+        except Exception as ex:
+            traceback.print_exc(file=sys.stderr)
+            print "Exception logging remote command %s" % ex

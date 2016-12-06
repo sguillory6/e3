@@ -4,6 +4,7 @@ import logging
 import logging.config
 
 import click
+
 from common.E3 import e3
 from provisioning.Aws import Aws
 from provisioning.ProvisionStack import ProvisionStack
@@ -32,7 +33,7 @@ from provisioning.ProvisionStack import ProvisionStack
 @click.option('--owner', default=e3.get_current_user(),
               help='The owner of the created AWS resources (default: current user is used)')
 def command(experiment, network, password, parameters, properties, templates, snapshot, version, public, owner):
-    logging.config.fileConfig(e3.get_logging_conf())
+    e3.setup_logging()
     aws = Aws()
     if experiment:
         # ProvisionStack all the instance(s) required to run an experiment, in parallel
@@ -63,6 +64,8 @@ def command(experiment, network, password, parameters, properties, templates, sn
             'version': version
         }
         ProvisionStack(aws, e3_properties, templates.split(",")).run()
+    logging.info("Provisioning completed successfully")
+
 
 if __name__ == '__main__':
     command()

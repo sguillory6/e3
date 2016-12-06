@@ -204,6 +204,11 @@ class E3:
         return getpass.getuser()
 
     @staticmethod
+    def setup_logging():
+        logging.config.fileConfig(e3.get_logging_conf())
+        logging.getLogger("paramiko").setLevel(logging.WARNING)
+
+    @staticmethod
     def _get_stack_network(instance_stack):
         if instance_stack:
             run_conf = instance_stack.get('RunConfig', {'network': None})
