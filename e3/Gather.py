@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-import os
-
-import click
 import logging
 import logging.config
-
+import os
 import shutil
+
+import click
 
 from common import Utils
 from common.Config import run_config
@@ -17,6 +16,7 @@ class Gather:
     def __init__(self, run_name):
         self._run = e3.load_run(run_name)
         self._run_name = run_name
+        self._log = logging.getLogger("run")
 
     def gather(self):
         # Gather run data off the instances
@@ -31,7 +31,9 @@ class Gather:
         worker = e3.load_instance(worker_name)
         key_file = '%s/instances/%s.pem' % (e3.get_e3_home(), worker_name)
         number = 1
+
         for node in worker['ClusterNodes']:
+            self._log.info("Collecting logs from worker node [%s]" % node)
             directory = '%s/runs/%s/%s/worker-node-%03d' % (e3.get_e3_home(), run_name, thread_name, number)
             if os.path.exists(directory):
                 shutil.rmtree(directory)
@@ -55,6 +57,7 @@ class Gather:
         key_file = '%s/instances/%s.pem' % (e3.get_e3_home(), instance_name)
         number = 1
         for node in instance['ClusterNodes']:
+            self._log.info("Collecting logs from instance [%s]" % node)
             directory = '%s/runs/%s/%s/cluster-node-%03d' % (e3.get_e3_home(), run_name, thread_name, number)
             collectd_cvs_directory = '%s/runs/%s/%s/cluster-node-%03d/collectd-csv' % \
                                      (e3.get_e3_home(), run_name, thread_name, number)
@@ -89,6 +92,7 @@ class Gather:
 def command(run):
     e3.setup_logging()
     Gather(run).gather()
+
 
 if __name__ == '__main__':
     command()
