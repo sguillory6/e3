@@ -70,8 +70,8 @@ def graph_experiment(run):
         thread_logical_name = 'thread-%03d' % (thread_index + 1)
         stages = threads[thread_index]['stages']
 
-        cluster_nodes = threads[thread_index]['instance']['stack']['ClusterNodes']
-        worker_nodes = threads[thread_index]['worker']['stack']['ClusterNodes']
+        cluster_nodes = e3.load_instance(threads[thread_index]['instance']['stack']['Name'])['ClusterNodes']
+        worker_nodes = e3.load_instance(threads[thread_index]['worker']['stack']['Name'])['ClusterNodes']
 
         for stage_index in range(0, len(stages)):
             stage_logical_name = 'stage-%03d' % stage_index

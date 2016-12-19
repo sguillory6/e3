@@ -16,11 +16,16 @@ prefer) can all be provisioned automatically in the Amazon Web Services (AWS) cl
     - [Installing](#markdown-header-installing)
 - [Getting started](#markdown-header-getting-started)
 - [Experiments](#markdown-header-experiments)
-    - [Defining an Experiment](#markdown-header-defining-an-experiment)
-    - [Experiment Phases](#markdown-header-experiment-phases)
+    - [Defining an experiment](#markdown-header-defining-an-experiment)
+    - [Experiment phases](#markdown-header-experiment-phases)
     - [Snapshots](#markdown-header-snapshots)
     - [Workloads](#markdown-header-workloads)
     - [Analysis](#markdown-header-analysis)
+- [Bring your own infrastructure](#markdown-header-bring-your-own-infrastructure)
+    - [Setting up bitbucket server](#markdown-header-setting-up-bitbucket-server)
+    - [Configuring worker nodes](#markdown-header-configuring-worker-nodes)
+    - [Example experiment file](#markdown-header-example-experiment-file)
+    - [Pulling it all together with a fully worked example](#markdown-header-pulling-it-all-together-with-a-fully-worked-example)
 - [Contributing](#markdown-header-contributing)
 - [License](#markdown-header-license)
 
@@ -75,15 +80,17 @@ virtualenv .ve
 source .ve/bin/activate
 pip install -r requirements.txt
 ```
+---
 
-## Getting started
-
-To provision machines to run, gather data, and analyze an experiment designed to stress different
-Bitbucket instances with lots of parallel Git hosting operations over SSH:
+## Quick start
+Once all requirements are installed, running the Orchestrate script with the `cluster-scaling-ssh` experiment will
+provision machines, gather data, and analyze an experiment designed to stress different Bitbucket instances with
+lots of parallel Git hosting operations over SSH:
 
 ```bash
 ./Orchestrate.py -e cluster-scaling-ssh
 ```
+---
 
 ## Experiments
 
@@ -105,7 +112,7 @@ The workloads referenced in the experiment JSON file are defined in [`e3-home/da
 
 ### Experiment Phases
 
-Performance experiments have a number of phases, which correspond to the the following entry points:
+Performance experiments have a number of phases, which correspond to the following scripts:
 
 1. [`Provision`](./e3/Provision.py), which spins up Bitbucket instance(s), cluster(s) of worker machines, and other associated
    infrastructure in AWS. Will automatically create a 'run file' in [`e3-home/runs`](./e3-home/runs) from your experiment
@@ -118,7 +125,7 @@ Performance experiments have a number of phases, which correspond to the the fol
    instance(s) performed and all their "vital signs" while under stress.
 5. [`Deprovision`](./e3/Deprovision.py) which deprovisions the test machines and archives the experiment run.
 
-In addtion to the global [`Orchestrate`](./e3/Orchestrate.py) entry point, which runs all these phases in order,
+In addition to the global [`Orchestrate`](./e3/Orchestrate.py) scripts, which runs all these phases in order,
 each phase can also be run individually:
 
 ```bash
@@ -263,6 +270,241 @@ or
 Any produced graphs will be stored in the `e3-home/runs/<run_name>/analysis` directory.
 
 For more information on Analysis, see the dedicated [README](./e3/analysis/README.md).
+---
+
+## Bring your own infrastructure
+
+E³ allows you to run tests against your own infrastructure. Currently E³ only supports Linux systems. In order to do so you will need to
+
+1. Setup a Bitbucket Server instance with a dataset of your choosing and some additional software used to collect performance metrics.
+2. Write a configuration file describing your Bitbucket server instance(s).
+3. Configure a worker cluster that will be responsible for generating load and write a configuration describing it.
+4. Write an experiment file describing the performance test.
+
+#### Setting up Bitbucket Server
+
+This section describes the steps required to setup Bitbucket Server so that it can be used to serve experiment requests while also reporting performance metrics.
+
+1. Create a public/private key pair that will be used to authenticate against each node in your cluster.
+2. Choose a filesystem and database snapshot that is representative of the data that you expect to see in your production instances.
+3. Configure Bitbucket server with the filesystem and database selected above.
+4. Generate a [Snapshot](#markdown-header-snapshots) for your test data and copy it to `e3-home/snapshots`.
+5. Ensure the SSHD is running on the Bitbucket server instances(s)
+6. Setup an `e3-user` with the keypair setup above, the same key pair must be used across all cluster nodes.
+7. [Enable jmx](https://confluence.atlassian.com/bitbucketserver/enabling-jmx-counters-for-performance-monitoring-776640189.html) monitoring for your Bitbucket instance.
+8. Install the collectd daemon and configure it with the [bitbucket-collectd.conf](./e3/config/bitbucket-collectd.conf) configuration file contained within this repository.
+9. Write a json file describing your Bitbucket server instance containing the following fields.
+    * List of `ClusterNodes` connection strings
+    * A `URL` for Bitbucket server
+    * The name of the `snapshot` file generated in step 3.
+    * `admin_password` the administrator password for the system under test
+* Copy the both json file describing the instance and the private key file for the instance to your `e3-home/instances` directory.
+Both files should have identical names with different extensions `.json` and `.pem` respectively.
+
+Example two node Bitbucket server configuration file.
+```
+{
+  "ClusterNodes": [
+    "e3-user@bitbucket-server-node-1",
+    "e3-user@bitbucket-server-node-2"
+  ],
+  "URL": "http://bitbucket-server",
+  "snapshot": "my-snapshot",
+  "RunConfig": {
+    "admin_password": "s3cr3t"
+  }
+}
+```
+
+#### Configuring worker nodes
+
+This section describes the steps needed to setup a worker cluster that will execute load against your Bitbucket server instance while also collecting metrics that will be useful in understanding your experiment.
+
+Create a public/private key pair that will be used to authenticate against each node in your cluster.
+
+For each node in your worker cluster
+
+1. Install the following
+    * git
+    * java
+    * python 2.7
+    * collectd
+2. Setup collectd with the [bitbucket-collectd.conf](./e3/config/bitbucket-collectd.conf) configuration file contained within this repository
+3. Ensure the SSH daemon is running on the worker node.
+4. Create an `e3-user` with sudo permissions that can be authenticated using the public/private key pair you created for this cluster.
+5. Create a `/media/data` directory with the `e3-user` as an owner
+6. Write a json file describing your worker cluster.
+7. Copy the json file that describes the worker cluster and the private key file for the instance into your `e3-home/instances` directory. Both files should have identical names with different extensions `.json` and `.pem` respectively.
+
+Example worker cluster configuration file.
+```
+{
+  "ClusterNodes": [
+    "e3-user@worker-node-1",
+    "e3-user@worker-node-2",
+    "e3-user@worker-node-3",
+    "e3-user@worker-node-4"
+  ]
+}
+```
+
+
+#### Example experiment file
+
+Describe your experiment making reference to the infrastructure configuration files you created above. See  [Experiments](#markdown-header-experiments) for more information
+
+
+```
+{
+  "duration": 10000,
+  "workload": "mixed",
+  "threads": [
+    {
+      "instance": {
+        "stack": {
+          "Name": "bitbucket-two-nodes"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40
+        }
+      ],
+      "worker": {
+        "stack": {
+          "Name": "four-node-worker"
+        }
+      }
+    }
+  ]
+}
+```
+
+#### Pulling it all together with a fully worked example
+
+This example shows how to run an experiment comparing a two node and four node cluster under increasing load levels.
+
+First define the Bitbucket instance configuration files.
+
+`two-node.json`
+
+```
+{
+  "ClusterNodes": [
+    "e3-user@bitbucket-server-node-1",
+    "e3-user@bitbucket-server-node-2"
+  ],
+  "URL": "http://bitbucket-server-2-node",
+  "snapshot": "my-snapshot",
+  "RunConfig": {
+    "admin_password": "s3cr3t"
+  }
+}
+```
+
+`four-node.json`
+
+```
+{
+  "ClusterNodes": [
+    "e3-user@bitbucket-server-node-1",
+    "e3-user@bitbucket-server-node-2",
+    "e3-user@bitbucket-server-node-3",
+    "e3-user@bitbucket-server-node-4"
+  ],
+  "URL": "http://bitbucket-server-4-node",
+  "snapshot": "my-snapshot",
+  "RunConfig": {
+    "admin_password": "s3cr3t"
+  }
+}
+```
+
+Next define the worker nodes.
+
+`two-node-worker.json`
+```
+{
+  "ClusterNodes": [
+    "e3-user@worker-node-1",
+    "e3-user@worker-node-2",
+    "e3-user@worker-node-3",
+    "e3-user@worker-node-4"
+  ]
+}
+```
+
+and the identical
+`four-node-worker.json`
+
+copy these four files along with their respective private ssh keys to `./e3-home/instances` so that the directory now contains.
+
+1. `two-node.json`
+* `two-node.pem`
+* `four-node.json`
+* `four-node.pem`
+* `two-node-worker.json`
+* `two-node-worker.pem`
+* `four-node-worker.json`
+* `four-node-worker.pem`
+
+Define your experiment in a file name `my-experiment.json`, in this case go from 40 to 200 concurrent connections in 5 stages each lasting 5 minutes,
+each stage will execute a `mixed` workload.
+
+
+```
+{
+  "duration": 300000,
+  "workload": "mixed",
+  "threads": [
+    {
+      "instance": {
+        "stack": {
+          "Name": "two-node"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40,
+          "clients": 80,
+          "clients": 120,
+          "clients": 160,
+          "clients": 200
+        }
+      ],
+      "worker": {
+        "stack": {
+          "Name": "two-node-worker"
+        }
+      }
+    },
+    {
+      "instance": {
+        "stack": {
+          "Name": "four-node"
+        }
+      },
+      "stages": [
+        {
+          "clients": 40,
+          "clients": 80,
+          "clients": 120,
+          "clients": 160,
+          "clients": 200
+        }
+      ],
+      "worker": {
+        "stack": {
+          "Name": "four-node-worker"
+        }
+      }
+    }
+  ]
+
+}
+```
+
+Copy this file to `./e3-home/runs/my-experiment/` you can now run this experiment by going to the E³ directory and running `./Run.py -r my-experiment`
 
 ---
 
