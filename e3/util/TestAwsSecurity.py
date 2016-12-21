@@ -4,7 +4,6 @@
 This exists for testing purposes to ensure that the Security implementation works.
 """
 
-import logging.config
 import os
 
 import sys
@@ -17,8 +16,9 @@ if __name__ == "__main__":
 
     from common.E3 import E3
     from provisioning.AtlassianAwsSecurity import AtlassianAwsSecurity
+
     e3_config = E3()
-    logging.config.fileConfig(e3_config.get_logging_conf())
+    e3_config.setup_logging()
     sec = AtlassianAwsSecurity()
     metadata = sec.load()
     pprint(metadata)
