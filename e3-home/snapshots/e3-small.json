@@ -19,10 +19,6 @@
     "account": "098706035825",
     "id": "e3-small"
   },
-  "es": {
-    "snapshot" : "e3-small",
-    "bucket": "bitbucket-server-e3"
-  },
   "projects": [
     {
       "name": "JAVASCRIPT",
