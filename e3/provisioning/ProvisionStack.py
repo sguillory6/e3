@@ -111,9 +111,9 @@ class ProvisionStack:
 
         template_url = e3.get_template_url(template_name)
         if template_url:
-            print template_url
             res = requests.get(template_url)
             if res.status_code == 200:
+                print "Found template at %s" % template_url
                 template_body = res.text
 
         if local_template_dir:
