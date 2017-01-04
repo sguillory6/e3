@@ -1,0 +1,84 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Public facing network",
+  "Resources" : {
+    "VPC" : {
+      "Type" : "AWS::EC2::VPC",
+      "Properties" : {
+        "CidrBlock" : "10.0.0.0/16",
+        "EnableDnsHostnames" : "true"
+      }
+    },
+    "Subnet1" : {
+      "Type" : "AWS::EC2::Subnet",
+      "Properties" : {
+        "AvailabilityZone" : { "Fn::Select" : [ "0", { "Fn::GetAZs" : "" } ] },
+        "VpcId" : { "Ref" : "VPC" },
+        "CidrBlock" : "10.0.0.0/24",
+        "MapPublicIpOnLaunch" : "true"
+      }
+    },
+    "Subnet2" : {
+      "Type" : "AWS::EC2::Subnet",
+      "Properties" : {
+        "AvailabilityZone" : { "Fn::Select" : [ "1", { "Fn::GetAZs" : "" } ] },
+        "VpcId" : { "Ref" : "VPC" },
+        "CidrBlock" : "10.0.1.0/24",
+        "MapPublicIpOnLaunch" : "true"
+      }
+    },
+    "InternetGateway" : {
+      "Type" : "AWS::EC2::InternetGateway"
+    },
+    "RouteTableAssociation1" : {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+        "RouteTableId" : { "Ref" : "RouteTable" },
+        "SubnetId" : { "Ref" : "Subnet1" }
+      }
+    },
+    "RouteTableAssociation2" : {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+        "RouteTableId" : { "Ref" : "RouteTable" },
+        "SubnetId" : { "Ref" : "Subnet2" }
+      }
+    },
+    "RouteTable" : {
+      "Type" : "AWS::EC2::RouteTable",
+      "Properties" : {
+        "VpcId" : { "Ref" : "VPC" }
+      }
+    },
+    "NetworkRoute" : {
+      "Type" : "AWS::EC2::Route",
+      "DependsOn" : "InternetGateway",
+      "Properties" : {
+        "RouteTableId" : { "Ref" : "RouteTable" },
+        "DestinationCidrBlock" : "0.0.0.0/0",
+        "GatewayId" : { "Ref" : "InternetGateway" }
+      }
+    },
+    "AttachInternetGateway" : {
+      "Type" : "AWS::EC2::VPCGatewayAttachment",
+      "Properties" : {
+        "VpcId" : { "Ref" : "VPC" },
+        "InternetGatewayId" : { "Ref" : "InternetGateway" }
+      }
+    }
+  },
+  "Outputs" : {
+    "VPC" : {
+      "Value" : { "Ref" : "VPC" },
+      "Description" : "The VPC resource id created by this template"
+    },
+    "Subnet1" : {
+      "Value" : { "Ref" : "Subnet1" },
+      "Description" : "The first Subnet resource id created by this template"
+    },
+    "Subnet2" : {
+      "Value" : { "Ref" : "Subnet2" },
+      "Description" : "The second Subnet resource id created by this template"
+    }
+  }
+}

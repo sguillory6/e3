@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import requests
 from datetime import datetime
 from threading import Lock, Thread
 
@@ -107,6 +108,14 @@ class ProvisionStack:
         local_template_dir = e3.get_template_dir()
         template_kwargs = {}
         template_body = None
+
+        template_url = e3.get_template_url(template_name)
+        if template_url:
+            res = requests.get(template_url)
+            if res.status_code == 200:
+                print "Found template at %s" % template_url
+                template_body = res.text
+
         if local_template_dir:
             print "Checking local directory for template"
             file_path = os.path.join(local_template_dir, file_name)
