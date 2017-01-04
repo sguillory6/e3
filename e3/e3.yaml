@@ -25,11 +25,15 @@ e3:
   #
   logging: 'logging.conf'
   #
-  # S3 bucket for CF templates
+  # URL used to access the CloudFormation templates
+  #
+  template_url: 'https://bitbucket.org/atlassian/atlassian-aws-deployment/raw/master/templates'
+  #
+  # Folder for CloudFormation templates. If this is set, templates will be looked up locally
+  # first, and if they exist, they will be used over any templates stored in `s3_bucket` or at `template_url`
+  #
+  template_dir: './templates'
+  #
+  # S3 bucket for CloudFormation templates
   #
   s3_bucket: 'atlassian-software/templates/bitbucket'
-  #
-  # Folder for CF templates. If this is set, templates will be looked up locally
-  # first, and if they exist, they will be used over any templates stored in `s3_bucket`
-  #
-  #template_dir: '../templates'

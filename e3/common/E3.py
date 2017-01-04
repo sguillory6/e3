@@ -120,6 +120,13 @@ class E3:
     def get_template_dir(self):
         return self._config.get('e3', {}).get('template_dir', None)
 
+    def get_template_url(self, template_name):
+        base_url = self._config.get('e3', {}).get('template_url', None)
+        if base_url:
+            return "%s/%s.template" % (base_url, template_name)
+        else:
+            return None
+
     def get_workloads(self):
         wl = os.path.join(self.get_e3_home(), "workloads")
         return map(lambda experiment_name: experiment_name[:-5],
