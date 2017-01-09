@@ -63,6 +63,14 @@ class E3:
                     runs_found.append(pos_run)
         return runs_found
 
+    def get_runs_name(self):
+        return [os.path.basename(run_path) for run_path in self.get_runs]
+
+    def get_stacks(self):
+        exp = os.path.join(self.get_e3_home(), "instances")
+        return map(lambda experiment_name: experiment_name[:-5],
+                   [os.path.basename(config) for config in glob.glob(os.path.join(exp, 'stack-*.json'))])
+
     def get_run_dir(self, run_name=None):
         if run_name:
             return os.path.join(self.get_e3_home(), 'runs', run_name)
