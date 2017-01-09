@@ -88,7 +88,7 @@ class Deprovision:
               help='When specified the network associated with the stack will be retained')
 def command(run, all_instances, network):
     e3.setup_logging()
-    Deprovision("stack-confluence-data-center-dluong-9be907", all_instances).deprovision(network)
+    Deprovision(run, all_instances).deprovision(network)
 
 if __name__ == '__main__':
     command()
