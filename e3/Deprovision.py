@@ -9,6 +9,10 @@ from common.E3 import e3
 from provisioning.Aws import Aws
 
 
+def _extract_stack_name_from_file_name(file_name):
+    return file_name[len('stack-'):-len('.json')]
+
+
 class Deprovision:
     def __init__(self, run_name, remove_all_instances=False):
         self._aws = Aws()
@@ -21,6 +25,7 @@ class Deprovision:
 
     def deprovision(self, retain_network=False):
         if self._run_json:
+            # de-provision running experiment
             for thread in self._run_json['threads']:
                 worker = thread['worker']
                 if 'stack' in worker:
@@ -47,22 +52,22 @@ class Deprovision:
                 self._log.error("Unable to archive run '%s' to archive folder, please delete or move it manually",
                                 self._run_name)
         else:
+            # de-provision running stacks
             if self._remove_all_instances:
                 logging.info("Deleting all running stacks")
                 self._deprovision_all_instances()
             else:
-                running_stack_json = e3.load_instance(self._run_name)
-                if running_stack_json:
-                    logging.info("Deleting stack %s" % running_stack_json["StackId"])
-                    self._deprovision_instance(running_stack_json["StackId"])
+                if self._run_name:
+                    running_stack_name = _extract_stack_name_from_file_name(self._run_name)
+                    logging.info("Deleting stack %s" % running_stack_name)
+                    self._deprovision_instance(running_stack_name)
                 else:
                     logging.info("Please provide experiment name or instance name")
 
     def _deprovision_all_instances(self):
         # Loop all running instances in home folder to delete
-        exp = os.path.join(e3.get_e3_home(), "instances")
         for running_stack_file in e3.get_stacks():
-            running_stack_name = running_stack_file[len('stack-'):-len('.json')]
+            running_stack_name = _extract_stack_name_from_file_name(running_stack_file)
             try:
                 self._deprovision_instance(running_stack_name)
                 os.remove(running_stack_name)

@@ -64,7 +64,7 @@ class E3:
         return runs_found
 
     def get_runs_name(self):
-        return [os.path.basename(run_path) for run_path in self.get_runs]
+        return [os.path.basename(run_path) for run_path in self.get_runs()]
 
     def get_stacks(self):
         exp = os.path.join(self.get_e3_home(), "instances")
