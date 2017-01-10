@@ -23,8 +23,8 @@ class Deprovision:
         self._run_json = None if not run_name else e3.load_run(run_name)
 
     def deprovision(self, retain_network=False):
+        # de-provision running experiment
         if self._run_json:
-            # de-provision running experiment
             for thread in self._run_json['threads']:
                 worker = thread['worker']
                 if 'stack' in worker:
@@ -50,18 +50,18 @@ class Deprovision:
             except OSError:
                 self._log.error("Unable to archive run '%s' to archive folder, please delete or move it manually",
                                 self._run_name)
+
+        # de-provision running stacks
+        if self._remove_all_stacks:
+            logging.info("Deleting all running stacks")
+            self._deprovision_all_instances()
         else:
-            # de-provision running stacks
-            if self._remove_all_stacks:
-                logging.info("Deleting all running stacks")
-                self._deprovision_all_instances()
+            if self._stack_name:
+                running_stack_name = _extract_stack_name_from_file_name(self._run_name)
+                logging.info("Deleting stack %s" % running_stack_name)
+                self._deprovision_instance(running_stack_name)
             else:
-                if self._stack_name:
-                    running_stack_name = _extract_stack_name_from_file_name(self._run_name)
-                    logging.info("Deleting stack %s" % running_stack_name)
-                    self._deprovision_instance(running_stack_name)
-                else:
-                    logging.info("Please provide experiment name or stack name")
+                logging.info("Please provide experiment name or stack name")
 
     def _deprovision_all_instances(self):
         # Loop all running instances in home folder to delete
