@@ -57,7 +57,7 @@ class Deprovision:
             self._deprovision_all_instances()
         else:
             if self._stack_name:
-                running_stack_name = _extract_stack_name_from_file_name(self._run_name)
+                running_stack_name = self._stack_name
                 logging.info("Deleting stack %s" % running_stack_name)
                 self._deprovision_instance(running_stack_name)
             else:
