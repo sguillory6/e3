@@ -20,9 +20,7 @@ class Deprovision:
         self._run_name = run_name
         self._stack_name = stack_name
         self._remove_all_stacks = remove_all_stacks
-        self._run_json = None
-        if run_name:
-            self._run_json = e3.load_run(run_name)
+        self._run_json = None if not run_name else e3.load_run(run_name)
 
     def deprovision(self, retain_network=False):
         if self._run_json:
