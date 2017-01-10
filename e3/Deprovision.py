@@ -14,11 +14,12 @@ def _extract_stack_name_from_file_name(file_name):
 
 
 class Deprovision:
-    def __init__(self, run_name, remove_all_instances=False):
+    def __init__(self, run_name, stack_name, remove_all_stacks=False):
         self._aws = Aws()
         self._log = logging.getLogger('deprovision')
         self._run_name = run_name
-        self._remove_all_instances = remove_all_instances
+        self._stack_name = stack_name
+        self._remove_all_stacks = remove_all_stacks
         self._run_json = None
         if run_name:
             self._run_json = e3.load_run(run_name)
@@ -53,16 +54,16 @@ class Deprovision:
                                 self._run_name)
         else:
             # de-provision running stacks
-            if self._remove_all_instances:
+            if self._remove_all_stacks:
                 logging.info("Deleting all running stacks")
                 self._deprovision_all_instances()
             else:
-                if self._run_name:
+                if self._stack_name:
                     running_stack_name = _extract_stack_name_from_file_name(self._run_name)
                     logging.info("Deleting stack %s" % running_stack_name)
                     self._deprovision_instance(running_stack_name)
                 else:
-                    logging.info("Please provide experiment name or instance name")
+                    logging.info("Please provide experiment name or stack name")
 
     def _deprovision_all_instances(self):
         # Loop all running instances in home folder to delete
@@ -81,14 +82,16 @@ class Deprovision:
 
 @click.command()
 @click.option('-r', '--run', required=False, help='The experiment/stack run you want to tear down',
-              type=click.Choice(e3.get_runs_name() + e3.get_stacks()))
-@click.option('-all', '--all_instances', required=False, is_flag=True, default=False,
+              type=click.Choice(e3.get_runs_name()))
+@click.option('-r', '--stack', required=False, help='The experiment/stack run you want to tear down',
+              type=click.Choice(e3.get_stacks()))
+@click.option('-all', '--all_stacks', required=False, is_flag=True, default=False,
               help='Tear down all running instances in home/instances folder')
 @click.option('-n', '--network', required=False, is_flag=True, default=False,
               help='When specified the network associated with the stack will be retained')
-def command(run, all_instances, network):
+def command(run, stack, all_stacks, network):
     e3.setup_logging()
-    Deprovision(run, all_instances).deprovision(network)
+    Deprovision(run, stack, all_stacks).deprovision(network)
 
 if __name__ == '__main__':
     command()
