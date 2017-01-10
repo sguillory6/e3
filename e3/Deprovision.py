@@ -81,7 +81,7 @@ class Deprovision:
 @click.command()
 @click.option('-r', '--run', required=False, help='The experiment/stack run you want to tear down',
               type=click.Choice(e3.get_runs_name()))
-@click.option('-r', '--stack', required=False, help='The experiment/stack run you want to tear down',
+@click.option('-s', '--stack', required=False, help='The experiment/stack run you want to tear down',
               type=click.Choice(e3.get_stacks()))
 @click.option('-all', '--all_stacks', required=False, is_flag=True, default=False,
               help='Tear down all running instances in home/instances folder')
