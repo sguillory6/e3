@@ -1,3 +1,5 @@
+
+import os
 from provisioning.Template import Template
 from common import Utils
 
@@ -36,13 +38,18 @@ class ConfluenceDataCenter(Template):
         asg_name = self.get_stack_output(stack_name, 'ClusterNodeGroup')
         ssg_name = self.get_stack_output(stack_name, 'SynchronyClusterNodeGroup')
         self._stack_config["Output"]['ClusterNodes'] = self.ssh_connection_strings_for_auto_scaling_group(asg_name)
+        self._stack_config["Output"]['ClusterNodeGroup'] = asg_name
+        self._stack_config["Output"]['SynchronyClusterNodeGroup'] = ssg_name
         self.wait_confluence_start(stack_name)
         # write provision information into properties file.
         # Will easier to to export provisioning metadata into bamboo variables
         try:
-            fo = open("target\confluence-provision.properties", "wb")
+            filename = "target/confluence-provision.properties"
+            if not os.path.exists(os.path.dirname(filename)):
+                os.makedirs(os.path.dirname(filename))
+            fo = open(os.path.join(filename, "confluence-provision.properties"), "wb")
             for item in self._stack_config["Output"]:
-                fo.writelines("%s=%s" % (item, self._stack_config["Output"][item]))
+                fo.write("%s=%s\n" % (item, self._stack_config["Output"][item]))
         except IOError:
             self._log.error("Could not write confluence-provision.properties")
         else:
