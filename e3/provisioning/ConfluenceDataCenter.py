@@ -40,6 +40,7 @@ class ConfluenceDataCenter(Template):
         self._stack_config["Output"]['ClusterNodes'] = self.ssh_connection_strings_for_auto_scaling_group(asg_name)
         self._stack_config["Output"]['ClusterNodeGroup'] = asg_name
         self._stack_config["Output"]['SynchronyClusterNodeGroup'] = ssg_name
+        self._stack_config["Output"]['NetworkStack'] = self._e3_properties['network']
         self.wait_confluence_start(stack_name)
         # write provision information into properties file.
         # Will easier to to export provisioning metadata into bamboo variables
