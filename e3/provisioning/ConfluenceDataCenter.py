@@ -48,11 +48,11 @@ class ConfluenceDataCenter(Template):
             filename = "target/confluence-provision.properties"
             if not os.path.exists(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
-            fo = open(os.path.join(filename, "confluence-provision.properties"), "wb")
+            fo = open(filename, "wb")
             for item in self._stack_config["Output"]:
                 fo.write("%s=%s\n" % (item, self._stack_config["Output"][item]))
-        except IOError:
-            self._log.error("Could not write confluence-provision.properties")
+        except IOError as e:
+            self._log.error("Could not write confluence-provision.properties: %s" % e)
         else:
             fo.close()
 
