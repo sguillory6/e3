@@ -1,4 +1,5 @@
 from provisioning.Template import Template
+import copy
 
 
 class PublicNetwork(Template):
@@ -12,4 +13,7 @@ class PublicNetwork(Template):
             },
             "Output": {}
         }
-        Template.__init__(self, aws, e3_properties, stack_config)
+        # We do not want to pass any parameters here
+        e3_properties_without_parameters = copy.deepcopy(e3_properties)
+        e3_properties_without_parameters.update({'parameters': ""})
+        Template.__init__(self, aws, e3_properties_without_parameters, stack_config)
