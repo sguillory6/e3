@@ -131,7 +131,6 @@ class ProvisionStack:
         else:
             template_kwargs['TemplateURL'] = "https://s3.amazonaws.com/%s/%s" % (e3.get_s3_bucket(), file_name)
 
-        print "Creating stack from CloudFormation template %s" % cf_template
         self._aws.cloud_formation.create_stack(
             Capabilities=['CAPABILITY_IAM'],
             Parameters=template.generate_parameters(),
