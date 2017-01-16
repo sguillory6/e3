@@ -10,7 +10,7 @@ from provisioning.Aws import Aws
 
 
 def _extract_stack_name_from_file_name(file_name):
-    return file_name[len('stack-'):-len('.json')]
+    return file_name[len('stack-'):]
 
 
 class Deprovision:
