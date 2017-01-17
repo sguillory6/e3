@@ -60,12 +60,7 @@ class LicensePage(PageObject):
 
     def fill_license(self):
         form = find_form_by_id(self._forms, "licenseform")
-        form["confLicenseString"] = "AAABDg0ODAoPeNptUF1Lw0AQfL9fEfD55JI2pAbuIV4iRPMhbSpRfDnjVg/SS7iPYP+9SdOiFWEXd\n\
-ndmmGGvKgvOvZUO8cYKXRIuicPiyvGI66MYdKNEb0QnKevkrrUgG3gNnWTgreXTHTEFxyHmBuikw\n\
-iTAxEXNyL/mjREDUKMsoB/NvB8JmWhAaqgOPRR8D5SVeZ6sWRplqJ2hJ1B60ngo50IakHyMkHz1Q\n\
-h3OlsFvy8Lu30CVO9ZabUAV3TtoSlCpPrgUevaPTMu1FlyiDagBVBrT22Bxg+tt+oDrl/oOL9bRM\n\
-9okBR0bZ/5qRTx/iU5pR3qWxhfIhfVWj5kpds/8/9M+WtV8cg1/H/cNLE6BtTAsAhRd83UUQYuGZ\n\
-cOk0/kRIWK7N/BT1AIUVCaT+e8bNzSBLgPETBQTlT5H0Ys=X02dp"
+        form["confLicenseString"] = self._confluence_instance.properties['conf_license']
         return self
 
     def go_next(self):
@@ -128,7 +123,9 @@ class FinishSetupPage(PageObject):
 
 
 if __name__ == '__main__':
-    selectBundles = BundleSelectionPage(ConfluenceIntance("http://localhost:8080/confluence/")).visit()
+    confluence_instance = ConfluenceIntance("http://localhost:8080/confluence/",
+                                            {"conf_license": "Correct license for installing Confluence"})
+    selectBundles = BundleSelectionPage(confluence_instance).visit()
     licensePage = selectBundles.go_next()
     print "--------------------Go to License Page-------------------------------"
     loadContentPage = licensePage.fill_license().go_next()

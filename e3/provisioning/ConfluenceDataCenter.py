@@ -57,9 +57,9 @@ class ConfluenceDataCenter(Template):
             self._log.error("Could not write confluence-provision.properties")
         else:
             fo.close()
-        self._setupConfluence(base_url=confluence_bl_url)
+        self._setup_confluence(base_url=confluence_bl_url)
 
-    def _setupConfluence(self, base_url="http://localhost:8080/confluence"):
+    def _setup_confluence(self, base_url="http://localhost:8080/confluence"):
         select_bundles = BundleSelectionPage(ConfluenceIntance(base_url), self._e3_properties['properties']).visit()
         license_page = select_bundles.go_next()
         print "--------------------Go to License Page-------------------------------"
