@@ -2,6 +2,7 @@
 import os
 from provisioning.Template import Template
 from common import Utils
+from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceIntance
 
 
 class ConfluenceDataCenter(Template):
@@ -35,6 +36,7 @@ class ConfluenceDataCenter(Template):
 
     def after_provision(self):
         stack_name = self._stack_config["StackName"]
+        confluence_bl_url = self.get_stack_output(stack_name, 'URL')
         asg_name = self.get_stack_output(stack_name, 'ClusterNodeGroup')
         ssg_name = self.get_stack_output(stack_name, 'SynchronyClusterNodeGroup')
         self._stack_config["Output"]['ClusterNodes'] = self.ssh_connection_strings_for_auto_scaling_group(asg_name)
@@ -55,6 +57,20 @@ class ConfluenceDataCenter(Template):
             self._log.error("Could not write confluence-provision.properties")
         else:
             fo.close()
+        self._setupConfluence(base_url=confluence_bl_url)
+
+    def _setupConfluence(self, base_url="http://localhost:8080/confluence"):
+        select_bundles = BundleSelectionPage(ConfluenceIntance(base_url), self._e3_properties['properties']).visit()
+        license_page = select_bundles.go_next()
+        print "--------------------Go to License Page-------------------------------"
+        load_content_page = license_page.fill_license().go_next()
+        print "--------------------Go to Load Content Page--------------------------"
+        user_mgmt_page = load_content_page.with_empty_site()
+        print "--------------------Go to User Mgnt Page-----------------------------"
+        setup_admin_page = user_mgmt_page.with_confluence_manage_users()
+        print "--------------------Go to Setup Admin Page---------------------------"
+        setup_admin_page.fill_admin_info().go_next()
+        print "--------------------Go to Finish Page--------------------------------"
 
     def before_provision(self):
         # should check if we have a key pair already
