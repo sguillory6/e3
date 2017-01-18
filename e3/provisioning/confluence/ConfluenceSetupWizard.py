@@ -19,7 +19,9 @@ def find_form_by_attr(forms, attr):
 class ConfluenceIntance:
     def __init__(self, base_url, properties=None):
         self.base_url = base_url
-        self.properties = properties
+        self.properties = None if not properties else \
+            dict(map(lambda param: tuple(param.split('=', 1)), filter(None, properties.split(','))))
+        print properties
 
 
 class BaseObject:
@@ -68,7 +70,7 @@ class LicensePage(PageObject):
         print go_next_form
         print "Go to next action %s" % go_next_form.action
         next_page_response = urlopen(go_next_form.click())
-        return LoadContentPage( self._confluence_instance, response=next_page_response)
+        return LoadContentPage(self._confluence_instance, response=next_page_response)
 
 
 class LoadContentPage(PageObject):
@@ -124,7 +126,7 @@ class FinishSetupPage(PageObject):
 
 if __name__ == '__main__':
     confluence_instance = ConfluenceIntance("http://localhost:8080/confluence/",
-                                            {"conf_license": "Correct license for installing Confluence"})
+                                            "conf_license=Correct license for installing Confluence")
     selectBundles = BundleSelectionPage(confluence_instance).visit()
     licensePage = selectBundles.go_next()
     print "--------------------Go to License Page-------------------------------"

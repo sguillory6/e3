@@ -52,7 +52,7 @@ class ConfluenceDataCenter(Template):
         print "Synchrony start successfully - Confluence stack is fully start"
 
     def _setup_confluence(self, base_url="http://localhost:8080/confluence"):
-        select_bundles = BundleSelectionPage(ConfluenceIntance(base_url), self._e3_properties['properties']).visit()
+        select_bundles = BundleSelectionPage(ConfluenceIntance(base_url, properties=self._e3_properties['properties'])).visit()
         license_page = select_bundles.go_next()
         print "--------------------Go to License Page-------------------------------"
         load_content_page = license_page.fill_license().go_next()
@@ -85,7 +85,7 @@ class ConfluenceDataCenter(Template):
             filename = "target/confluence-provision.properties"
             if not os.path.exists(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
-            fo = open(os.path.join(filename, "confluence-provision.properties"), "wb")
+            fo = open(filename, "wb")
             for item in self._stack_config["Output"]:
                 fo.write("%s=%s\n" % (item, self._stack_config["Output"][item]))
         except IOError:
@@ -106,5 +106,5 @@ class ConfluenceDataCenter(Template):
         return Utils.poll_url(
             status_url,
             900,
-            lambda response: response.text == 'OK'
+            lambda response: response.ok()
         )
