@@ -45,8 +45,11 @@ class ConfluenceDataCenter(Template):
         self.wait_confluence_start(stack_name)
         self.write_provisioning_metadata()
         # Going through setup wizard
+        print "Confluence stack is started. Prepare to run setup wizard"
         self._setup_confluence(base_url=confluence_bl_url)
+        print "Confluence setup finish. Starting Synchrony"
         self.start_synchrony(stack_name)
+        print "Synchrony start successfully - Confluence stack is fully start"
 
     def _setup_confluence(self, base_url="http://localhost:8080/confluence"):
         select_bundles = BundleSelectionPage(ConfluenceIntance(base_url), self._e3_properties['properties']).visit()
