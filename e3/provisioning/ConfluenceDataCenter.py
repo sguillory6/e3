@@ -1,4 +1,5 @@
 import os
+import time
 from provisioning.Template import Template
 from common import Utils
 from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceIntance
@@ -46,6 +47,7 @@ class ConfluenceDataCenter(Template):
         self.write_provisioning_metadata()
         # Going through setup wizard
         print "Confluence stack is started. Prepare to run setup wizard"
+        time.sleep(20)
         self._setup_confluence(base_url=confluence_bl_url)
         print "Confluence setup finish. Starting Synchrony"
         self.start_synchrony(stack_name)
@@ -106,5 +108,5 @@ class ConfluenceDataCenter(Template):
         return Utils.poll_url(
             status_url,
             900,
-            lambda response: response.ok()
+            lambda response: "OK" in response.text
         )
