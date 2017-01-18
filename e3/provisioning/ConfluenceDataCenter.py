@@ -1,4 +1,3 @@
-
 import os
 from provisioning.Template import Template
 from common import Utils
@@ -44,20 +43,10 @@ class ConfluenceDataCenter(Template):
         self._stack_config["Output"]['SynchronyClusterNodeGroup'] = ssg_name
         self._stack_config["Output"]['NetworkStack'] = self._e3_properties['network']
         self.wait_confluence_start(stack_name)
-        # write provision information into properties file.
-        # Will easier to to export provisioning metadata into bamboo variables
-        try:
-            filename = "target/confluence-provision.properties"
-            if not os.path.exists(os.path.dirname(filename)):
-                os.makedirs(os.path.dirname(filename))
-            fo = open(os.path.join(filename, "confluence-provision.properties"), "wb")
-            for item in self._stack_config["Output"]:
-                fo.write("%s=%s\n" % (item, self._stack_config["Output"][item]))
-        except IOError:
-            self._log.error("Could not write confluence-provision.properties")
-        else:
-            fo.close()
+        self.write_provisioning_metadata()
+        # Going through setup wizard
         self._setup_confluence(base_url=confluence_bl_url)
+        self.start_synchrony(stack_name)
 
     def _setup_confluence(self, base_url="http://localhost:8080/confluence"):
         select_bundles = BundleSelectionPage(ConfluenceIntance(base_url), self._e3_properties['properties']).visit()
@@ -76,10 +65,43 @@ class ConfluenceDataCenter(Template):
         # should check if we have a key pair already
         self.create_key_pair()
 
+    def start_synchrony(self, stack_name):
+        # Update scaling group of Synchrony
+        ssg_name = self.get_stack_output(stack_name, 'SynchronyClusterNodeGroup')
+        self._aws.auto_scaling.update_auto_scaling_group(
+            AutoScalingGroupName=ssg_name,
+            MinSize=1,
+            MaxSize=1,
+            DesiredCapacity=1)
+        self.wait_synchrony_start(stack_name)
+
+    def write_provisioning_metadata(self):
+        # write provision information into properties file.
+        # Will easier to to export provisioning metadata into bamboo variables
+        try:
+            filename = "target/confluence-provision.properties"
+            if not os.path.exists(os.path.dirname(filename)):
+                os.makedirs(os.path.dirname(filename))
+            fo = open(os.path.join(filename, "confluence-provision.properties"), "wb")
+            for item in self._stack_config["Output"]:
+                fo.write("%s=%s\n" % (item, self._stack_config["Output"][item]))
+        except IOError:
+            self._log.error("Could not write confluence-provision.properties")
+        else:
+            fo.close()
+
     def wait_confluence_start(self, stack_name):
         status_url = self.get_stack_output(stack_name, 'URL') + '/status'
         return Utils.poll_url(
             status_url,
             900,
             lambda response: response.text == '{"state":"RUNNING"}' or response.text == '{"state":"FIRST_RUN"}'
+        )
+
+    def wait_synchrony_start(self, stack_name):
+        status_url = self.get_stack_output(stack_name, 'URL') + '/synchrony/heartbeat'
+        return Utils.poll_url(
+            status_url,
+            900,
+            lambda response: response.text == 'OK'
         )
