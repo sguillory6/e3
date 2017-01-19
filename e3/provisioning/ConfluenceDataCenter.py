@@ -2,7 +2,7 @@ import os
 import time
 from provisioning.Template import Template
 from common import Utils
-from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceIntance
+from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceInstance
 
 
 class ConfluenceDataCenter(Template):
@@ -54,17 +54,17 @@ class ConfluenceDataCenter(Template):
         print "Synchrony start successfully - Confluence stack is fully start"
 
     def _setup_confluence(self, base_url="http://localhost:8080/confluence"):
-        select_bundles = BundleSelectionPage(ConfluenceIntance(base_url, properties=self._e3_properties['properties'])).visit()
+        select_bundles = BundleSelectionPage(ConfluenceInstance(base_url, properties=self._e3_properties['properties'])).visit()
         license_page = select_bundles.go_next()
-        print "--------------------Go to License Page-------------------------------"
+        print "--------------------Selecting no bundles--------------------------------"
         load_content_page = license_page.fill_license().go_next()
-        print "--------------------Go to Load Content Page--------------------------"
+        print "--------------------Configuring license---------------------------------"
         user_mgmt_page = load_content_page.with_empty_site()
-        print "--------------------Go to User Mgnt Page-----------------------------"
+        print "--------------------Loading empty site----------------------------------"
         setup_admin_page = user_mgmt_page.with_confluence_manage_users()
-        print "--------------------Go to Setup Admin Page---------------------------"
+        print "--------------------Configuring internal user management----------------"
         setup_admin_page.fill_admin_info().go_next()
-        print "--------------------Go to Finish Page--------------------------------"
+        print "--------------------Adding admin account--------------------------------"
 
     def before_provision(self):
         # should check if we have a key pair already

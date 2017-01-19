@@ -16,7 +16,7 @@ def find_form_by_attr(forms, attr):
     return None
 
 
-class ConfluenceIntance:
+class ConfluenceInstance:
     def __init__(self, base_url, properties=None):
         self.base_url = base_url
         self.properties = None if not properties else \
@@ -125,16 +125,16 @@ class FinishSetupPage(PageObject):
 
 
 if __name__ == '__main__':
-    confluence_instance = ConfluenceIntance("http://localhost:8080/confluence/",
+    confluence_instance = ConfluenceInstance("http://localhost:8080/confluence/",
                                             "conf_license=Correct license for installing Confluence")
     selectBundles = BundleSelectionPage(confluence_instance).visit()
-    licensePage = selectBundles.go_next()
-    print "--------------------Go to License Page-------------------------------"
-    loadContentPage = licensePage.fill_license().go_next()
-    print "--------------------Go to Load Content Page--------------------------"
-    userMgmtPage = loadContentPage.with_empty_site()
-    print "--------------------Go to User Mgnt Page-----------------------------"
-    setupAdminPage = userMgmtPage.with_confluence_manage_users()
-    print "--------------------Go to Setup Admin Page---------------------------"
-    finishSetupPage = setupAdminPage.fill_admin_info().go_next()
-    print "--------------------Go to Finish Page--------------------------------"
+    license_page = selectBundles.go_next()
+    print "--------------------Selecting no bundles--------------------------------"
+    load_content_page = license_page.fill_license().go_next()
+    print "--------------------Configuring license---------------------------------"
+    user_mgmt_page = load_content_page.with_empty_site()
+    print "--------------------Loading empty site----------------------------------"
+    setup_admin_page = user_mgmt_page.with_confluence_manage_users()
+    print "--------------------Configuring internal user management----------------"
+    setup_admin_page.fill_admin_info().go_next()
+    print "--------------------Adding admin account--------------------------------"
