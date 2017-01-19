@@ -91,8 +91,8 @@ class ConfluenceDataCenter(Template):
             fo = open(filename, "wb")
             for item in self._stack_config["Output"]:
                 fo.write("%s=%s\n" % (item, self._stack_config["Output"][item]))
-        except IOError:
-            self._log.error("Could not write confluence-provision.properties")
+        except IOError as e:
+            self._log.error("Could not write confluence-provision.properties: %s" % e)
         else:
             fo.close()
 

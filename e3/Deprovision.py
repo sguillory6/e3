@@ -9,10 +9,6 @@ from common.E3 import e3
 from provisioning.Aws import Aws
 
 
-def _extract_stack_name_from_file_name(file_name):
-    return file_name[len('stack-'):-len('.json')]
-
-
 class Deprovision:
     def __init__(self, run_name, stack_name, remove_all_stacks=False):
         self._aws = Aws()
@@ -66,7 +62,7 @@ class Deprovision:
     def _deprovision_all_instances(self):
         # Loop all running instances in home folder to delete
         for running_stack_file in e3.get_stacks():
-            running_stack_name = _extract_stack_name_from_file_name(running_stack_file)
+            running_stack_name = running_stack_file
             try:
                 self._deprovision_instance(running_stack_name)
                 os.remove(running_stack_name)
@@ -79,9 +75,9 @@ class Deprovision:
 
 
 @click.command()
-@click.option('-r', '--run', required=False, help='The experiment/stack run you want to tear down',
+@click.option('-r', '--run', required=False, help='The experiment run you want to tear down',
               type=click.Choice(e3.get_runs_name()))
-@click.option('-s', '--stack', required=False, help='The experiment/stack run you want to tear down',
+@click.option('-s', '--stack', required=False, help='The stack run you want to tear down',
               type=click.Choice(e3.get_stacks()))
 @click.option('-all', '--all_stacks', required=False, is_flag=True, default=False,
               help='Tear down all running instances in home/instances folder')
