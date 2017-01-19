@@ -1,5 +1,6 @@
 import os
 import time
+from common.E3 import e3
 from provisioning.Template import Template
 from common import Utils
 from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceInstance
@@ -84,7 +85,7 @@ class ConfluenceDataCenter(Template):
         # write provision information into properties file.
         # Will easier to to export provisioning metadata into bamboo variables
         try:
-            filename = "target/confluence-provision.properties"
+            filename = os.path.join(e3.get_e3_home(), "instances", "confluence-provision.properties");
             if not os.path.exists(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
             fo = open(filename, "wb")

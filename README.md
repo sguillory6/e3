@@ -43,7 +43,7 @@ pre-requisites is with your operating system's package manager. For example:
     brew    install imagemagick python rrdtool
    
 ##### Linux Ubuntu, Debian, ...
-    apt-get install gnuplot imagemagick python rrdtool
+    apt-get install gnuplot imagemagick python rrdtool librrd-dev
 
 ##### Linux Red Hat, CentOS, ...
     yum     install gnuplot imagemagick python rrdtool
