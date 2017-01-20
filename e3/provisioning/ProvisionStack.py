@@ -12,6 +12,7 @@ from provisioning.BitbucketDataCenter import BitbucketDataCenter
 from provisioning.BitbucketDataCenterLDAP import BitbucketDataCenterLDAP
 from provisioning.BitbucketServer import BitbucketServer
 from provisioning.BitbucketServerGenerateDataset import BitbucketServerGenerateDataSet
+from provisioning.ConfluenceDataCenter import ConfluenceDataCenter
 from provisioning.PublicNetwork import PublicNetwork
 from provisioning.WorkerCluster import WorkerCluster
 
@@ -26,6 +27,7 @@ class ProvisionStack:
             "BitbucketDataCenterLDAP": BitbucketDataCenterLDAP(aws, e3_properties),
             "BitbucketServer": BitbucketServer(aws, e3_properties),
             "BitbucketServerGenerateDataSet": BitbucketServerGenerateDataSet(aws, e3_properties),
+            "ConfluenceDataCenter": ConfluenceDataCenter(aws, e3_properties),
             "WorkerCluster": WorkerCluster(aws, e3_properties),
             "PublicNetwork": PublicNetwork(aws, e3_properties)
         }

@@ -1,4 +1,5 @@
 from provisioning.Template import Template
+import copy
 
 
 class PublicNetwork(Template):

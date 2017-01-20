@@ -163,7 +163,7 @@ class Template:
             return self._stack_config["StackName"]
         else:
             name_prefix = self._stack_config["Orchestration"]["StackNamePrefix"]
-            self._stack_config["StackName"] = '%s-%s-%s' % (name_prefix,
+            self._stack_config["StackName"] = 'stack-%s-%s-%s' % (name_prefix,
                                                             self._e3_properties['owner'],
                                                             binascii.b2a_hex(os.urandom(3)))
             return self._stack_config["StackName"]
