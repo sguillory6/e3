@@ -464,13 +464,11 @@ each stage will execute a `mixed` workload.
         }
       },
       "stages": [
-        {
-          "clients": 40,
-          "clients": 80,
-          "clients": 120,
-          "clients": 160,
-          "clients": 200
-        }
+        { "clients": 40 },
+        { "clients": 80 },
+        { "clients": 120 },
+        { "clients": 160 },
+        { "clients": 200 }
       ],
       "worker": {
         "stack": {
@@ -485,13 +483,11 @@ each stage will execute a `mixed` workload.
         }
       },
       "stages": [
-        {
-          "clients": 40,
-          "clients": 80,
-          "clients": 120,
-          "clients": 160,
-          "clients": 200
-        }
+        { "clients": 40 },
+        { "clients": 80 },
+        { "clients": 120 },
+        { "clients": 160 },
+        { "clients": 200 }
       ],
       "worker": {
         "stack": {
