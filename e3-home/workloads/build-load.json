@@ -1,6 +1,6 @@
 [
   {
-    "script": "persona.SshBuildAgent",
+    "script": "bitbucket.persona.SshBuildAgent",
     "description": "SshBuildAgent",
     "scale": 1,
     "weight": 0.7
