@@ -1,4 +1,4 @@
-from bitbucket.common.helper import HttpHelper
+from bitbucket.common.helper.HttpHelper import HttpHelper
 from bitbucket.scm.base.GitClone import GitClone
 
 

@@ -2,7 +2,7 @@ import os
 
 from java.lang import System
 
-from bitbucket.common.wrapper import User
+from bitbucket.common.wrapper.User import User
 
 
 class ProtocolHelper(object):

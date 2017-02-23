@@ -3,7 +3,7 @@ import re
 
 from TestScript import TestScript
 from Tools import is_http_ok, get_form_variable, is_http_code, get_redirect
-from bitbucket.common.wrapper import Project
+from bitbucket.common.wrapper.Project import Project
 
 PROJECT_LIST_RE = re.compile("<td class=\"project-key\">([^<]*)")
 PROJECT_ERRORS_RE = re.compile("<div class=\"error\">([^<]*)")

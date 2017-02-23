@@ -2,7 +2,7 @@ from bitbucket.web.Dashboard import Dashboard
 
 from TestScript import TestScript
 from bitbucket.common.helper.Authentication import login, logout
-from bitbucket.common.wrapper import User
+from bitbucket.common.wrapper.User import User
 from bitbucket.web.PullRequestWorkflow import PullRequestWorkflow
 
 

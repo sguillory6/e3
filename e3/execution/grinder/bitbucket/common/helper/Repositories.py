@@ -3,7 +3,7 @@ import re
 
 from TestScript import TestScript
 from Tools import is_http_ok, get_form_variable, is_http_code, get_redirect
-from bitbucket.common.wrapper import Repository
+from bitbucket.common.wrapper.Repository import Repository
 
 REPOS_LIST_RE = re.compile("data-repository-id=\"[0-9]*\">([^<]*)")
 REPO_ERRORS_RE = re.compile("<div class=\"error\">([^<]*)")

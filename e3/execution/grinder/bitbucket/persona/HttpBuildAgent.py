@@ -1,7 +1,7 @@
 from bitbucket.scm.GitLsRemoteHttp import GitLsRemoteHttp
 
 from Instrumentation import instrument
-from bitbucket.persona.base import BuildAgent
+from bitbucket.persona.base.BuildAgent import BuildAgent
 from bitbucket.scm.GitCloneOverHttp import GitCloneOverHttp
 
 

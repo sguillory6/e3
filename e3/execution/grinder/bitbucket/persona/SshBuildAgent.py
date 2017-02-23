@@ -1,7 +1,7 @@
 from Instrumentation import instrument
-from bitbucket.persona.base import BuildAgent
-from bitbucket.scm import GitCloneOverSsh
-from bitbucket.scm import GitLsRemoteSsh
+from bitbucket.persona.base.BuildAgent import BuildAgent
+from bitbucket.scm.GitCloneOverSsh import GitCloneOverSsh
+from bitbucket.scm.GitLsRemoteSsh import GitLsRemoteSsh
 
 
 class SshBuildAgent(BuildAgent):
