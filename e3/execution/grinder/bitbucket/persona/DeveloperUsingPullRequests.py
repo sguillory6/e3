@@ -1,4 +1,4 @@
-from web.Dashboard import Dashboard
+from bitbucket.web.Dashboard import Dashboard
 
 from TestScript import TestScript
 from bitbucket.common.helper.Authentication import login, logout
