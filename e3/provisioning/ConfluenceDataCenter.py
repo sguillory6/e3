@@ -1,5 +1,6 @@
 import os
 import time
+import requests
 from common.E3 import e3
 from provisioning.Template import Template
 from common import Utils
@@ -55,7 +56,8 @@ class ConfluenceDataCenter(Template):
         print "Synchrony start successfully - Confluence stack is fully start"
 
     def _setup_confluence(self, base_url="http://localhost:8080/confluence"):
-        select_bundles = BundleSelectionPage(ConfluenceInstance(base_url, properties=self._e3_properties['properties'])).visit()
+        confluence_instance = ConfluenceInstance(base_url, properties=self._e3_properties['properties'])
+        select_bundles = BundleSelectionPage(confluence_instance).visit()
         license_page = select_bundles.go_next()
         print "--------------------Selecting no bundles--------------------------------"
         load_content_page = license_page.fill_license().go_next()
@@ -64,8 +66,13 @@ class ConfluenceDataCenter(Template):
         print "--------------------Loading empty site----------------------------------"
         setup_admin_page = user_mgmt_page.with_confluence_manage_users()
         print "--------------------Configuring internal user management----------------"
-        setup_admin_page.fill_admin_info().go_next()
+        finish_setup_page = setup_admin_page.fill_admin_info().go_next()
         print "--------------------Adding admin account--------------------------------"
+        further_settings_page = finish_setup_page.go_next()
+        print "--------------------Confluence Further Settings-------------------------"
+        security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().go_next()
+        print "--------------------Confluence Security Settings------------------------"
+        security_settings_page.login_web_sudo().disable_web_sudo().go_next()
 
     def before_provision(self):
         # should check if we have a key pair already

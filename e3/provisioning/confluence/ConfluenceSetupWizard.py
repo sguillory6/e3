@@ -1,4 +1,6 @@
 from mechanize import ParseResponse, urlopen, urljoin
+import xmlrpclib
+import requests
 
 
 def find_form_by_id(forms, id_attr):
@@ -138,11 +140,11 @@ class LoginPage(PageObject):
         self._go_next_form = None
 
     def admin_login(self, next_page):
-        '''
+        """
         Login with admin account then navigate to another page
         :param next_page:
         :return:
-        '''
+        """
         self._go_next_form = find_form_by_name(self._forms, 'loginform')
         self._go_next_form['os_username'] = 'admin'
         self._go_next_form['os_password'] = 'admin'
@@ -189,7 +191,7 @@ class ConfluenceFurtherSettingsPage(PageObject):
                 self._confluence_instance,
                 self._response, self._path,
                 self._forms,
-                '/confluence/admin/editspacesconfig.action#features')
+                'admin/editspacesconfig.action#features')
             next_page_response = web_sudo_page.fill_admin_password()
             print "Trying to login with websudo => Done"
             return ConfluenceFurtherSettingsPage(self._confluence_instance, response=next_page_response)
@@ -199,17 +201,52 @@ class ConfluenceFurtherSettingsPage(PageObject):
     def enable_xml_rpc(self):
         print "Filling a form to enable xml rpc"
         self._go_next_form = find_form_by_name(self._forms, 'editspacesconfig')
-        self._go_next_form['siteHomePage'] = ['dashboard']
-        self._go_next_form['allowThreadedComments'] = ['true']
-        self._go_next_form['allowTrackbacks'] = ['true']
-        self._go_next_form['allowRemoteApi'] = ['true']
-        self._go_next_form['enableOpenSearch'] = ['true']
-        self._go_next_form['draftSaveIntervalMinutes'] = '0'
-        self._go_next_form['draftSaveIntervalSeconds'] = '30'
-        self._go_next_form['enableQuickNav'] = ['true']
-        self._go_next_form['maxSimultaneousQuickNavRequests'] = '40'
+        self._go_next_form.set_single(True, name='allowRemoteApi')
         print self._go_next_form
         print "Filling a form to enable xml rpc => done"
+        return self
+
+    def go_next(self):
+        print self._go_next_form
+        print "Go to next action %s" % self._go_next_form.action
+        next_page_response = urlopen(self._go_next_form.click())
+        url = urljoin(self._confluence_instance.base_url, 'admin/editsecurityconfig.action')
+        next_page_response = urlopen(url)
+        return ConfluenceSecuritySettingsPage(self._confluence_instance, next_page_response)
+
+
+class ConfluenceSecuritySettingsPage(PageObject):
+    def __init__(self, confluence_instance, response=None, path=None):
+        PageObject.__init__(self, confluence_instance, response=response, path=path)
+        self._go_next_form = None
+
+    def login_web_sudo(self):
+        """
+        If current url is authenticate.action then we need to login websudo when return original page
+        otherwise return itself
+        :return: ConfluenceFurtherSettingsPage instance
+        """
+        print "Check if we need to login with websudo or not"
+        str_url = self._response.geturl()
+        if "authenticate.action" in str_url:
+            print "Trying to login with websudo"
+            web_sudo_page = WebSudoPage(
+                self._confluence_instance,
+                self._response, self._path,
+                self._forms,
+                '/confluence/admin/editspacesconfig.action#features')
+            next_page_response = web_sudo_page.fill_admin_password()
+            print "Trying to login with websudo => Done"
+            return ConfluenceFurtherSettingsPage(self._confluence_instance, response=next_page_response)
+
+        return self
+
+    def disable_web_sudo(self):
+        print "Filling security settings"
+        self._go_next_form = find_form_by_name(self._forms, "editsecurityconfig")
+        self._go_next_form.set_single(False, name='webSudoEnabled')
+        print self._go_next_form
+        print "Filling security settings => done"
         return self
 
     def go_next(self):
@@ -240,8 +277,12 @@ de+cwU=X02eu")
     print "--------------------Adding admin account--------------------------------"
     further_settings_page = finish_setup_page.go_next()
     print "--------------------Confluence Further Settings-------------------------"
-    further_settings_page.login_web_sudo().enable_xml_rpc().go_next()
+    security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().go_next()
+    print "--------------------Confluence Security Settings------------------------"
+    security_settings_page.login_web_sudo().disable_web_sudo().go_next()
 
-    # confluence_further_settings_page = LoginPage(confluence_instance).visit()\
-    #     .admin_login(ConfluenceFurtherSettingsPage(confluence_instance, path="admin/viewspacesconfig.action"))
-    # confluence_further_settings_page.login_web_sudo().enable_xml_rpc().go_next()
+    # wikiURL = confluence_instance.base_url
+    # s = xmlrpclib.ServerProxy(wikiURL + "/rpc/xmlrpc")
+    # token = s.confluence1.login("admin", "admin")
+    # print "rpc authenticated token %s" % token
+
