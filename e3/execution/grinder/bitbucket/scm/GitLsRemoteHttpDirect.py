@@ -1,5 +1,4 @@
 from bitbucket.common.helper.HttpDirectHelper import HttpDirectHelper
-
 from bitbucket.scm.base.GitLsRemote import GitLsRemote
 
 

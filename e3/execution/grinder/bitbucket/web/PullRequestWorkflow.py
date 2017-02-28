@@ -12,12 +12,12 @@ from bitbucket.common.helper.Branches import rest_get_branches, get_branch_by_id
 from bitbucket.common.helper.Diff import view_diff
 from bitbucket.common.helper.Repositories import browse_repository, rest_get_repository
 from bitbucket.common.wrapper.User import User
+from bitbucket.common.helper.PullRequests import create_pull_request, rest_get_pr_changes, rest_get_pr_diff, \
+    merge_pr, get_pr_list, rest_get_pr_by_id, decline_pr
 
 from Instrumentation import instrument
 from TestScript import TestScript
 from Tools import get_http_clone_url
-from bitbucket.common.helper.PullRequests import create_pull_request, rest_get_pr_changes, rest_get_pr_diff, \
-    merge_pr, get_pr_list, rest_get_pr_by_id, decline_pr
 
 
 class PullRequestWorkflow(TestScript):

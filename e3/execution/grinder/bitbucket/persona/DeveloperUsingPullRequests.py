@@ -1,9 +1,9 @@
 from bitbucket.web.Dashboard import Dashboard
-
-from TestScript import TestScript
+from bitbucket.web.PullRequestWorkflow import PullRequestWorkflow
 from bitbucket.common.helper.Authentication import login, logout
 from bitbucket.common.wrapper.User import User
-from bitbucket.web.PullRequestWorkflow import PullRequestWorkflow
+
+from TestScript import TestScript
 
 
 class DeveloperUsingPullRequests(TestScript):

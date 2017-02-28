@@ -1,9 +1,9 @@
 from bitbucket.common.helper.Inbox import rest_get_inbox_count
 from bitbucket.common.helper.Repositories import rest_get_recent_repositories
+from bitbucket.common.helper.Authentication import login, logout
 
 from Instrumentation import instrument
 from TestScript import TestScript
-from bitbucket.common.helper.Authentication import login, logout
 
 
 class Dashboard(TestScript):

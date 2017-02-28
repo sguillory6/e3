@@ -1,5 +1,4 @@
 from bitbucket.common.helper.SshHelper import SshHelper
-
 from bitbucket.scm.base.PushChanges import PushChanges
 
 

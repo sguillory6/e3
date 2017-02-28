@@ -1,12 +1,6 @@
 from inspect import getmembers, isfunction, getmodule
 
-from bitbucket.common.helper import Authentication
-from bitbucket.common.helper import Branches
-from bitbucket.common.helper import Diff
-from bitbucket.common.helper import Inbox
-from bitbucket.common.helper import Projects
-from bitbucket.common.helper import Repositories
-
+from bitbucket.common.helper import Authentication, Branches, Diff, Inbox, Projects, Repositories
 from Tools import register
 from bitbucket.common.helper import PullRequests
 

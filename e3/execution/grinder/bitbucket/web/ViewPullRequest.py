@@ -3,10 +3,10 @@
 from bitbucket.common.helper.Projects import choose_project_at_random
 from bitbucket.common.helper.PullRequests import choose_pull_request_at_random, rest_get_pr_diff
 from bitbucket.common.helper.Repositories import choose_repository_at_random
+from bitbucket.common.helper.Authentication import login
 
 from TestScript import TestScript
 from Tools import is_http_ok
-from bitbucket.common.helper.Authentication import login
 
 
 class ViewPullRequest(TestScript):

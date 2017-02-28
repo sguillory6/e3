@@ -4,7 +4,6 @@ import random
 import re
 
 from bitbucket.common.WeightedRandomGenerator import weighted_choice
-
 from bitbucket.common.RandomWords import RandomWords
 
 
