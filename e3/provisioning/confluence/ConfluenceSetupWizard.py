@@ -280,6 +280,13 @@ de+cwU=X02eu")
     security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().go_next()
     print "--------------------Confluence Security Settings------------------------"
     security_settings_page.login_web_sudo().disable_web_sudo().go_next()
+    print "--------------------Disable Onboarding plugin---------------------------"
+    plugin_key = 'com.atlassian.confluence.plugins.confluence-onboarding'
+    response_obj = requests.put(
+        confluence_instance.base_url + "rest/plugins/1.0/%s-key?os_username=admin&os_password=admin" % plugin_key,
+        json={'enabled': 'false'},
+        headers={'content-type': 'application/vnd.atl.plugins.plugin+json'})
+    print "disable onboarding status %s" % response_obj.text
 
     # wikiURL = confluence_instance.base_url
     # s = xmlrpclib.ServerProxy(wikiURL + "/rpc/xmlrpc")
