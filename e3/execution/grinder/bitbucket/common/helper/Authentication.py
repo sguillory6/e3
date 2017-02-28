@@ -1,6 +1,6 @@
 from TestScript import TestScript
 from Tools import is_http_ok, get_redirect, is_redirect
-from bitbucket.common.wrapper import User
+from bitbucket.common.wrapper.User import User
 
 
 def login(script, user):
