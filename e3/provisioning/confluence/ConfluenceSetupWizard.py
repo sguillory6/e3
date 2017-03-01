@@ -255,13 +255,7 @@ class ConfluenceSecuritySettingsPage(PageObject):
 
 if __name__ == '__main__':
     confluence_instance = ConfluenceInstance("http://localhost:8080/confluence/",
-                                            "conf_license=AAABKQ0ODAoPeNptUV1LwzAUfd+vCPiiDx3tRhkOAs6uk+q+mJtU367htgbbZNykxf17s6bCFCFP5\n\
-x7OV64WJNljo1g0YtF4Gk6mUcSyZM9GYRQPhFbFMNHKgrDpCmTFy1ZbarQq78BWYIwENRS69kzHk\n\
-i1yR0APbIGsQlpDjdwjc7CQoLJIF7SlFKgM7k9H7KjJZrVKd0k2W/r7hkpQ0oCVWvEtWJLi01/SF\n\
-qrG4wVUptdzSZ2DAiUw/TpKOjlX5K7RJAjdiwbPSC1SNuf3k/FtkB+ypyB/yxfBeDd79RLrpn5H2\n\
-hQHg2R4HIZh36gh8QEGfxTjXvGyx/+evj4aQfLYBXa7FlWDLiS7Ps/C/C437OzGOuNfH9BN8+AGL\n\
-9mL7i+EXfm/ab4B7kecvDAsAhRPd5JtwVC0TRgGfz5rxy80GnCUlwIUVq55S9Oew9F0b5pnFN8Ms\n\
-de+cwU=X02eu")
+                                            "conf_license=license string here")
     selectBundles = BundleSelectionPage(confluence_instance).visit()
     license_page = selectBundles.go_next()
     print "--------------------Selecting no bundles--------------------------------"
