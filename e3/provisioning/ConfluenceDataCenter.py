@@ -1,10 +1,12 @@
 import os
 import time
-import requests
+
+from mechanize import urlopen, urljoin
 from common.E3 import e3
-from provisioning.Template import Template
 from common import Utils
+from provisioning.Template import Template
 from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceInstance
+from confluence.ConfluenceSetupWizard import ConfluenceSecuritySettingsPage
 
 
 class ConfluenceDataCenter(Template):
@@ -70,8 +72,12 @@ class ConfluenceDataCenter(Template):
         print "--------------------Adding admin account--------------------------------"
         further_settings_page = finish_setup_page.go_next()
         print "--------------------Confluence Further Settings-------------------------"
-        security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().submit()
+        further_settings_page.login_web_sudo().enable_xml_rpc().submit()
         print "--------------------Confluence Security Settings------------------------"
+        url = urljoin(confluence_instance, 'admin/editsecurityconfig.action')
+        next_page_response = urlopen(url)
+        security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance, next_page_response)
+        security_settings_page.login_web_sudo().submit()
         security_settings_page.disable_web_sudo().submit()
 
     def before_provision(self):

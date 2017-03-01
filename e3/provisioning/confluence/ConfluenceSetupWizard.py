@@ -1,6 +1,4 @@
 from mechanize import ParseResponse, urlopen, urljoin
-import xmlrpclib
-import requests
 
 
 def find_form_by_id(forms, id_attr):
@@ -209,9 +207,7 @@ class ConfluenceFurtherSettingsPage(PageObject):
     def submit(self):
         print "Go to next action %s" % self._go_next_form.action
         urlopen(self._go_next_form.click())
-        url = urljoin(self._confluence_instance.base_url, 'admin/editsecurityconfig.action')
-        next_page_response = urlopen(url)
-        return ConfluenceSecuritySettingsPage(self._confluence_instance, next_page_response)
+        return self
 
 
 class ConfluenceSecuritySettingsPage(PageObject):
@@ -271,4 +267,7 @@ if __name__ == '__main__':
     print "--------------------Confluence Further Settings-------------------------"
     security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().submit()
     print "--------------------Confluence Security Settings------------------------"
+    url = urljoin(confluence_instance, 'admin/editsecurityconfig.action')
+    next_page_response = urlopen(url)
+    security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance, next_page_response)
     security_settings_page.login_web_sudo().submit()
