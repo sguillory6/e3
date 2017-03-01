@@ -1,6 +1,6 @@
 from mechanize import ParseResponse, urlopen, urljoin
-from requests.auth import HTTPBasicAuth
-import requests
+
+from UPMHelper import disable_plugin
 
 
 def find_form_by_id(forms, id_attr):
@@ -209,9 +209,7 @@ class ConfluenceFurtherSettingsPage(PageObject):
     def submit(self):
         print "Go to next action %s" % self._go_next_form.action
         urlopen(self._go_next_form.click())
-        url = urljoin(self._confluence_instance.base_url, 'admin/editsecurityconfig.action')
-        next_page_response = urlopen(url)
-        return ConfluenceSecuritySettingsPage(self._confluence_instance, next_page_response)
+        return self
 
 
 class ConfluenceSecuritySettingsPage(PageObject):
@@ -271,12 +269,8 @@ if __name__ == '__main__':
     print "--------------------Confluence Further Settings-------------------------"
     security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().submit()
     print "--------------------Confluence Security Settings------------------------"
-    security_settings_page.login_web_sudo().disable_web_sudo().submit()
-    print "--------------------Disable Onboarding plugin---------------------------"
-    plugin_key = 'com.atlassian.confluence.plugins.confluence-onboarding'
-    response_obj = requests.put(
-        confluence_instance.base_url + "rest/plugins/1.0/%s-key" % plugin_key,
-        auth=HTTPBasicAuth('admin', 'admin'),
-        json={'enabled': 'false'},
-        headers={'content-type': 'application/vnd.atl.plugins.plugin+json'})
-    print "disable onboarding status %s" % response_obj.text
+    url = urljoin(confluence_instance, 'admin/editsecurityconfig.action')
+    next_page_response = urlopen(url)
+    security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance, next_page_response)
+    security_settings_page.login_web_sudo().submit()
+    disable_plugin(confluence_instance.base_url, "'com.atlassian.confluence.plugins.confluence-onboarding'")

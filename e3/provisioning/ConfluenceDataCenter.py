@@ -1,10 +1,13 @@
 import os
 import time
-import requests
-from requests.auth import HTTPBasicAuth
-from common.E3 import e3
-from provisioning.Template import Template
+
+from mechanize import urlopen, urljoin
+
 from common import Utils
+from common.E3 import e3
+from confluence.ConfluenceSetupWizard import ConfluenceSecuritySettingsPage
+from confluence.UPMHelper import disable_plugin
+from provisioning.Template import Template
 from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceInstance
 
 
@@ -71,17 +74,14 @@ class ConfluenceDataCenter(Template):
         print "--------------------Adding admin account--------------------------------"
         further_settings_page = finish_setup_page.go_next()
         print "--------------------Confluence Further Settings-------------------------"
-        security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().submit()
+        further_settings_page.login_web_sudo().enable_xml_rpc().submit()
         print "--------------------Confluence Security Settings------------------------"
-        security_settings_page.login_web_sudo().disable_web_sudo().submit()
-        print "--------------------Disable Onboarding plugin---------------------------"
-        plugin_key = 'com.atlassian.confluence.plugins.confluence-onboarding'
-        response_obj = requests.put(
-            confluence_instance.base_url + "rest/plugins/1.0/%s-key" % plugin_key,
-            auth=HTTPBasicAuth('admin', 'admin'),
-            json={'enabled': 'false'},
-            headers={'content-type': 'application/vnd.atl.plugins.plugin+json'})
-        print "disable onboarding status %s" % response_obj.text
+        url = urljoin(confluence_instance, 'admin/editsecurityconfig.action')
+        next_page_response = urlopen(url)
+        security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance, next_page_response)
+        security_settings_page.login_web_sudo().submit()
+        security_settings_page.disable_web_sudo().submit()
+        disable_plugin(confluence_instance.base_url, "com.atlassian.confluence.plugins.confluence-onboarding")
 
     def before_provision(self):
         # should check if we have a key pair already
