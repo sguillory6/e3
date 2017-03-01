@@ -1,6 +1,6 @@
 [
   {
-    "script": "web.PullRequestWorkflow",
+    "script": "bitbucket.web.PullRequestWorkflow",
     "description": "PullRequest",
     "scale": 1,
     "weight": 1

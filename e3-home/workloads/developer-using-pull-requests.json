@@ -1,6 +1,6 @@
 [
   {
-    "script": "persona.DeveloperUsingPullRequests",
+    "script": "bitbucket.persona.DeveloperUsingPullRequests",
     "description": "DeveloperUsingPullRequests",
     "scale": 1,
     "weight": 1

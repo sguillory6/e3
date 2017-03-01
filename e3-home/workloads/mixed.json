@@ -1,60 +1,60 @@
 [
   {
-    "script": "scm.GitCloneOverSsh",
+    "script": "bitbucket.scm.GitCloneOverSsh",
     "description": "GitCloneOverSsh",
     "scale": 1.0,
     "weight": 0.4
   },
   {
-    "script": "scm.GitLsRemoteSsh",
+    "script": "bitbucket.scm.GitLsRemoteSsh",
     "description": "GitLsRemoteSsh",
     "scale": 1.0,
     "weight": 0.1
   },
   {
-    "script": "web.Dashboard",
+    "script": "bitbucket.web.Dashboard",
     "description": "Dashboard",
     "scale": 1.0,
     "weight": 0.1
   },
   {
-    "script": "web.ViewPullRequest",
+    "script": "bitbucket.web.ViewPullRequest",
     "description": "ViewPullRequest",
     "scale": 1.0,
     "weight": 0.1
   },
   {
-    "script": "scm.PushChangesSsh",
+    "script": "bitbucket.scm.PushChangesSsh",
     "description": "PushChangesSsh",
     "scale": 1.0,
     "weight": 0.05
   },
   {
-    "script": "web.Audit",
+    "script": "bitbucket.web.Audit",
     "description": "ListAuditEvents",
     "scale": 1.00,
     "weight": 0.05
   },
   {
-    "script": "web.BrowseProjectsAndRepositories",
+    "script": "bitbucket.web.BrowseProjectsAndRepositories",
     "description": "BrowseProjectsAndRepositories",
     "scale": 1.0,
     "weight": 0.05
   },
   {
-    "script": "web.PullRequestWorkflow",
+    "script": "bitbucket.web.PullRequestWorkflow",
     "description": "PullRequestWorkflow",
     "scale": 1.0,
     "weight": 0.05
   },
   {
-    "script": "web.ListUsers",
+    "script": "bitbucket.web.ListUsers",
     "description": "ListUsers",
     "scale": 1.0,
     "weight": 0.05
   },
   {
-    "script": "scm.GitLsRemoteHttp",
+    "script": "bitbucket.scm.GitLsRemoteHttp",
     "description": "GitLsRemoteHttp",
     "scale": 1.0,
     "weight": 0.05
