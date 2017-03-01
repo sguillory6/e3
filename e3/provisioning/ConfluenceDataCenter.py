@@ -1,6 +1,7 @@
 import os
 import time
 import requests
+from requests.auth import HTTPBasicAuth
 from common.E3 import e3
 from provisioning.Template import Template
 from common import Utils
