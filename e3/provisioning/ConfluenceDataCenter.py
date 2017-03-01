@@ -70,9 +70,9 @@ class ConfluenceDataCenter(Template):
         print "--------------------Adding admin account--------------------------------"
         further_settings_page = finish_setup_page.go_next()
         print "--------------------Confluence Further Settings-------------------------"
-        security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().go_next()
+        security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().submit()
         print "--------------------Confluence Security Settings------------------------"
-        security_settings_page.login_web_sudo().disable_web_sudo().go_next()
+        security_settings_page.disable_web_sudo().submit()
 
     def before_provision(self):
         # should check if we have a key pair already

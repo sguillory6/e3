@@ -206,10 +206,9 @@ class ConfluenceFurtherSettingsPage(PageObject):
         print "Filling a form to enable xml rpc => done"
         return self
 
-    def go_next(self):
-        print self._go_next_form
+    def submit(self):
         print "Go to next action %s" % self._go_next_form.action
-        next_page_response = urlopen(self._go_next_form.click())
+        urlopen(self._go_next_form.click())
         url = urljoin(self._confluence_instance.base_url, 'admin/editsecurityconfig.action')
         next_page_response = urlopen(url)
         return ConfluenceSecuritySettingsPage(self._confluence_instance, next_page_response)
@@ -249,8 +248,7 @@ class ConfluenceSecuritySettingsPage(PageObject):
         print "Filling security settings => done"
         return self
 
-    def go_next(self):
-        print self._go_next_form
+    def submit(self):
         print "Go to next action %s" % self._go_next_form.action
         next_page_response = urlopen(self._go_next_form.click())
 
@@ -277,12 +275,6 @@ de+cwU=X02eu")
     print "--------------------Adding admin account--------------------------------"
     further_settings_page = finish_setup_page.go_next()
     print "--------------------Confluence Further Settings-------------------------"
-    security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().go_next()
+    security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().submit()
     print "--------------------Confluence Security Settings------------------------"
-    security_settings_page.login_web_sudo().disable_web_sudo().go_next()
-
-    # wikiURL = confluence_instance.base_url
-    # s = xmlrpclib.ServerProxy(wikiURL + "/rpc/xmlrpc")
-    # token = s.confluence1.login("admin", "admin")
-    # print "rpc authenticated token %s" % token
-
+    security_settings_page.login_web_sudo().submit()
