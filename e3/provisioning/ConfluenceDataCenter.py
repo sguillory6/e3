@@ -76,7 +76,8 @@ class ConfluenceDataCenter(Template):
         print "--------------------Disable Onboarding plugin---------------------------"
         plugin_key = 'com.atlassian.confluence.plugins.confluence-onboarding'
         response_obj = requests.put(
-            confluence_instance.base_url + "rest/plugins/1.0/%s-key?os_username=admin&os_password=admin" % plugin_key,
+            confluence_instance.base_url + "rest/plugins/1.0/%s-key" % plugin_key,
+            auth=HTTPBasicAuth('admin', 'admin'),
             json={'enabled': 'false'},
             headers={'content-type': 'application/vnd.atl.plugins.plugin+json'})
         print "disable onboarding status %s" % response_obj.text
