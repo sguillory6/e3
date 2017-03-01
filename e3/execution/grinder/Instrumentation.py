@@ -1,13 +1,8 @@
 from inspect import getmembers, isfunction, getmodule
 
+from bitbucket.common.helper import Authentication, Branches, Diff, Inbox, Projects, Repositories
 from Tools import register
-from common.helper import Authentication
-from common.helper import Branches
-from common.helper import Diff
-from common.helper import Inbox
-from common.helper import Projects
-from common.helper import PullRequests
-from common.helper import Repositories
+from bitbucket.common.helper import PullRequests
 
 # methods that must be excluded from instrumentation
 FUNC_BLACKLIST = ["get_branch_by_id"]
