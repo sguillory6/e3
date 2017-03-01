@@ -1,6 +1,6 @@
 from TestScript import TestScript
 from Tools import is_http_ok, get_redirect, is_redirect
-from bitbucket.common.wrapper import User
+from confluence.common.wrapper.User import User
 
 
 def login(script, user):
@@ -20,12 +20,12 @@ def login(script, user):
         username = user['username']
         password = user['password']
     login_form_data = {
-        "j_username": username,
-        "j_password": password
+        "os_username": username,
+        "os_password": password
     }
-    script.http("GET", "/login")
+    script.http("GET", "/login.action")
     if is_http_ok():
-        script.http("POST", "/j_atl_security_check", login_form_data)
+        script.http("POST", "/dologin.action", login_form_data)
         # Login always redirects
         # But if it redirects to itself the login failed
         if "/login" not in get_redirect():
@@ -42,7 +42,7 @@ def logout(script):
     :return: Nothing
     :rtype: None
     """
-    script.http("GET", "/j_atl_security_logout")
+    script.http("GET", "/logout.action")
     if is_http_ok():
         if is_redirect():
             script.http("GET", get_redirect())
