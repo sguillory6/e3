@@ -9,3 +9,4 @@ requests==2.11.1
 rrdtool==0.1.6
 spur==0.3.19
 mechanize==0.2.5
+request=2.13.0

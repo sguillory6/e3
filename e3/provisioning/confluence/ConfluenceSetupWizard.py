@@ -1,5 +1,7 @@
 from mechanize import ParseResponse, urlopen, urljoin
 
+from UPMHelper import disable_plugin
+
 
 def find_form_by_id(forms, id_attr):
     return find_form_by_attr(forms, {'key': 'id', 'value': id_attr})
@@ -271,3 +273,4 @@ if __name__ == '__main__':
     next_page_response = urlopen(url)
     security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance, next_page_response)
     security_settings_page.login_web_sudo().submit()
+    disable_plugin(confluence_instance.base_url, "'com.atlassian.confluence.plugins.confluence-onboarding'")

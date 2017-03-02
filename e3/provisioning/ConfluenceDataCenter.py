@@ -2,11 +2,13 @@ import os
 import time
 
 from mechanize import urlopen, urljoin
-from common.E3 import e3
+
 from common import Utils
+from common.E3 import e3
+from confluence.ConfluenceSetupWizard import ConfluenceSecuritySettingsPage
+from confluence.UPMHelper import disable_plugin
 from provisioning.Template import Template
 from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceInstance
-from confluence.ConfluenceSetupWizard import ConfluenceSecuritySettingsPage
 
 
 class ConfluenceDataCenter(Template):
@@ -79,6 +81,7 @@ class ConfluenceDataCenter(Template):
         security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance, next_page_response)
         security_settings_page.login_web_sudo().submit()
         security_settings_page.disable_web_sudo().submit()
+        disable_plugin(confluence_instance.base_url, "com.atlassian.confluence.plugins.confluence-onboarding")
 
     def before_provision(self):
         # should check if we have a key pair already
