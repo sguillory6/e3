@@ -106,9 +106,8 @@ class TestScript(object):
 
     def _create_test_data_provider(self, script_name):
         """
-        Test data provider either by passed by environment variable -DtestDataProvider.
-        When E3 run it will get that information from experiment file. So we could have difference test data provider
-        for difference experiment/product
+        Test data provider either by passed by environment variable -DtestDataProvider or from experiment file.
+        This allows E3 to to use a different test data provider for each experiment or product.
         :param script_name:
         :return:
         """
