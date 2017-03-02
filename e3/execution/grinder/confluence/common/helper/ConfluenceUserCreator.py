@@ -10,6 +10,9 @@ def create_new_user(base_url, user_name, group_name):
     confluence_xmlrpc = confluence_xmlrpc.confluence2
     rpc_token = confluence_xmlrpc.login("admin", "admin")
     logger.info("XmlRpc login token: %s" % rpc_token)
+    if confluence_xmlrpc.hasUser(rpc_token, user_name):
+        return
+
     confluence_xmlrpc.addUser(
         rpc_token,
         {

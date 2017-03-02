@@ -87,7 +87,7 @@ class TestScript(object):
         self.args = args
         self.root = System.getProperty("root")
         self.test = Test(number, args["description"])
-        self.test_data = self._create_test_data_provider(System.getProperty("testDataProvider"))
+        self.test_data = self._create_test_data_provider(args["testDataProvider"])
         self.info("Test %d: \"%s\"" % (number, args["description"]))
         grinder.getStatistics().delayReports = 1
         duration = datetime.datetime.now() - start_time
