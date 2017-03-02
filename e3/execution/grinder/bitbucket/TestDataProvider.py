@@ -29,7 +29,7 @@ class TestDataProvider:
             instance_json_file = "%s/instances/%s.json" % (root, System.getProperty("instance"))
             if not os.path.exists(instance_json_file):
                 raise ValueError("Instance must be the name of a valid "
-                                 "instance file located in %s/e3/data/instances or %s/instances" % (root, root))
+                                 "instance file %s located in %s/e3/data/instances or %s/instances" % (instance_json_file, root, root))
         instance = utils.load_json(instance_json_file)
 
         snapshot_json_file = "%s/e3/data/snapshots/%s.json" % (root, instance["snapshot"])

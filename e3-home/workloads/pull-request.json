@@ -1,6 +1,7 @@
 [
   {
     "script": "bitbucket.web.PullRequestWorkflow",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "PullRequest",
     "scale": 1,
     "weight": 1

@@ -1,60 +1,70 @@
 [
   {
     "script": "bitbucket.scm.GitCloneOverSsh",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "GitCloneOverSsh",
     "scale": 1.0,
     "weight": 0.4
   },
   {
     "script": "bitbucket.scm.GitLsRemoteSsh",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "GitLsRemoteSsh",
     "scale": 1.0,
     "weight": 0.1
   },
   {
     "script": "bitbucket.web.Dashboard",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "Dashboard",
     "scale": 1.0,
     "weight": 0.1
   },
   {
     "script": "bitbucket.web.ViewPullRequest",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "ViewPullRequest",
     "scale": 1.0,
     "weight": 0.1
   },
   {
     "script": "bitbucket.scm.PushChangesSsh",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "PushChangesSsh",
     "scale": 1.0,
     "weight": 0.05
   },
   {
     "script": "bitbucket.web.Audit",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "ListAuditEvents",
     "scale": 1.00,
     "weight": 0.05
   },
   {
     "script": "bitbucket.web.BrowseProjectsAndRepositories",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "BrowseProjectsAndRepositories",
     "scale": 1.0,
     "weight": 0.05
   },
   {
     "script": "bitbucket.web.PullRequestWorkflow",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "PullRequestWorkflow",
     "scale": 1.0,
     "weight": 0.05
   },
   {
     "script": "bitbucket.web.ListUsers",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "ListUsers",
     "scale": 1.0,
     "weight": 0.05
   },
   {
     "script": "bitbucket.scm.GitLsRemoteHttp",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "GitLsRemoteHttp",
     "scale": 1.0,
     "weight": 0.05
