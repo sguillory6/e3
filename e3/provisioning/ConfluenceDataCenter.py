@@ -76,9 +76,7 @@ class ConfluenceDataCenter(Template):
         print "--------------------Confluence Further Settings-------------------------"
         further_settings_page.login_web_sudo().enable_xml_rpc().submit()
         print "--------------------Confluence Security Settings------------------------"
-        url = urljoin(confluence_instance, 'admin/editsecurityconfig.action')
-        next_page_response = urlopen(url)
-        security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance, next_page_response)
+        security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance).visit()
         security_settings_page.login_web_sudo().submit()
         security_settings_page.disable_web_sudo().submit()
         disable_plugin(confluence_instance.base_url, "com.atlassian.confluence.plugins.confluence-onboarding")

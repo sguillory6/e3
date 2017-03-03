@@ -213,8 +213,8 @@ class ConfluenceFurtherSettingsPage(PageObject):
 
 
 class ConfluenceSecuritySettingsPage(PageObject):
-    def __init__(self, confluence_instance, response=None, path=None):
-        PageObject.__init__(self, confluence_instance, response=response, path=path)
+    def __init__(self, confluence_instance, response=None):
+        PageObject.__init__(self, confluence_instance, response=response, path='admin/editsecurityconfig.action')
         self._go_next_form = None
 
     def login_web_sudo(self):
@@ -269,8 +269,6 @@ if __name__ == '__main__':
     print "--------------------Confluence Further Settings-------------------------"
     security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().submit()
     print "--------------------Confluence Security Settings------------------------"
-    url = urljoin(confluence_instance, 'admin/editsecurityconfig.action')
-    next_page_response = urlopen(url)
-    security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance, next_page_response)
+    security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance).visit()
     security_settings_page.login_web_sudo().submit()
     disable_plugin(confluence_instance.base_url, "'com.atlassian.confluence.plugins.confluence-onboarding'")
