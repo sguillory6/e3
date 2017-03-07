@@ -1,4 +1,7 @@
 from mechanize import ParseResponse, urlopen, urljoin
+from ConfluenceSpaceUtils import *
+
+import os
 
 from UPMHelper import disable_plugin
 
@@ -131,7 +134,7 @@ class FinishSetupPage(PageObject):
 
     def go_next(self):
         print "Go to further setting config"
-        return ConfluenceFurtherSettingsPage(self._confluence_instance, path='admin/viewspacesconfig.action').visit()
+        return ConfluenceFurtherSettingsPage(self._confluence_instance, path='admin/editspacesconfig.action#features').visit()
 
 
 class LoginPage(PageObject):
@@ -185,6 +188,7 @@ class ConfluenceFurtherSettingsPage(PageObject):
         """
         print "Check if we need to login with websudo or not"
         str_url = self._response.geturl()
+        print str_url
         if "authenticate.action" in str_url:
             print "Trying to login with websudo"
             web_sudo_page = WebSudoPage(
@@ -252,8 +256,9 @@ class ConfluenceSecuritySettingsPage(PageObject):
 
 
 if __name__ == '__main__':
-    confluence_instance = ConfluenceInstance("http://localhost:8080/confluence/",
-                                            "conf_license=license string here")
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+    print "root is: ", root
+    confluence_instance = ConfluenceInstance("http://localhost:8080/confluence/", "conf_license=license string here")
     selectBundles = BundleSelectionPage(confluence_instance).visit()
     license_page = selectBundles.go_next()
     print "--------------------Selecting no bundles--------------------------------"
@@ -271,4 +276,12 @@ if __name__ == '__main__':
     print "--------------------Confluence Security Settings------------------------"
     security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance).visit()
     security_settings_page.disable_web_sudo().submit()
+    print "--------------------Disabling WebSudo-----------------------------------"
     disable_plugin(confluence_instance.base_url, "'com.atlassian.confluence.plugins.confluence-onboarding'")
+    print "--------------------Disabling Onboarding--------------------------------"
+    (confluence_xmlrpc, rpc_token) = authenticate_rpc(confluence_instance.base_url)
+    filepath = os.path.join(root, "e3-home", "space-import.xml.zip")
+    imported = import_space(confluence_xmlrpc, rpc_token, filepath)
+    print "    Import successful? %r" % imported
+    print "    Has space WOT: %r" % has_space(confluence_xmlrpc, rpc_token, "WOT")
+    print "--------------------Importing space-------------------------------------"

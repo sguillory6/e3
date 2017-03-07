@@ -1,0 +1,32 @@
+{
+  "duration": 300000,
+  "workload": "confluence-reader",
+  "threads": [
+    {
+      "name": "test-thread",
+      "instance": {
+        "name": "2-node",
+        "version": "4.11.0",
+        "snapshot": "e3-small",
+        "template": "ConfluenceDataCenter",
+        "properties": ["db.schema.lock.maxWait=600"],
+        "parameters": {
+          "ClusterNodeMin": "2",
+          "ClusterNodeMax": "2"
+        }
+      },
+      "worker": {
+        "name": "1-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "1"
+        }
+      },
+      "stages": [
+        {
+          "clients": 10
+        }
+      ]
+    }
+  ]
+}

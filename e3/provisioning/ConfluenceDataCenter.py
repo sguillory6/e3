@@ -6,6 +6,7 @@ from mechanize import urlopen, urljoin
 from common import Utils
 from common.E3 import e3
 from confluence.ConfluenceSetupWizard import ConfluenceSecuritySettingsPage
+from confluence.ConfluenceSpaceUtils import *
 from confluence.UPMHelper import disable_plugin
 from provisioning.Template import Template
 from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceInstance
@@ -19,7 +20,7 @@ class ConfluenceDataCenter(Template):
             "CloudFormation": {
                 'AssociatePublicIpAddress': str(e3_properties['public']).lower(),
                 'CatalinaOpts': '-Dcom.sun.management.jmxremote.port=3333 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false',
-                'ConfluenceVersion': '6.1.0-beta6',
+                'ConfluenceVersion': '6.1.0-m19',
                 'ClusterNodeInstanceType': 'c3.xlarge',
                 "CidrBlock": '0.0.0.0/0',
                 'DBMasterUserPassword': 'conf3last1c',
@@ -60,6 +61,7 @@ class ConfluenceDataCenter(Template):
         print "Synchrony start successfully - Confluence stack is fully start"
 
     def _setup_confluence(self, base_url="http://localhost:8080/confluence"):
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
         confluence_instance = ConfluenceInstance(base_url, properties=self._e3_properties['properties'])
         select_bundles = BundleSelectionPage(confluence_instance).visit()
         license_page = select_bundles.go_next()
@@ -80,6 +82,12 @@ class ConfluenceDataCenter(Template):
         security_settings_page.login_web_sudo().submit()
         security_settings_page.disable_web_sudo().submit()
         disable_plugin(confluence_instance.base_url, "com.atlassian.confluence.plugins.confluence-onboarding")
+        (confluence_xmlrpc, rpc_token) = authenticate_rpc(confluence_instance.base_url)
+        filepath = os.path.join(root, "e3-home", "space-import.xml.zip")
+        imported = import_space(confluence_xmlrpc, rpc_token, filepath)
+        print "    Import successful? %r" % imported
+        print "    Has space WOT: %r" % has_space(confluence_xmlrpc, rpc_token, "WOT")
+        print "--------------------Importing space-------------------------------------"
 
     def before_provision(self):
         # should check if we have a key pair already
