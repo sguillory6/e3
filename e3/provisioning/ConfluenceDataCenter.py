@@ -79,7 +79,6 @@ class ConfluenceDataCenter(Template):
         further_settings_page.login_web_sudo().enable_xml_rpc().submit()
         print "--------------------Confluence Security Settings------------------------"
         security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance).visit()
-        security_settings_page.login_web_sudo().submit()
         security_settings_page.disable_web_sudo().submit()
         disable_plugin(confluence_instance.base_url, "com.atlassian.confluence.plugins.confluence-onboarding")
         (confluence_xmlrpc, rpc_token) = authenticate_rpc(confluence_instance.base_url)

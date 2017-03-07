@@ -72,7 +72,7 @@ class Gather:
             Utils.rsync(node, key_file, '/var/lib/collectd/rrd/', collectd_rrd_directory, upload=False)
             number += 1
 
-        file_server = instance['FileServerConnectionString']
+        file_server = instance.get('FileServerConnectionString', '')
         if file_server:
             collectd_cvs_directory = '%s/runs/%s/%s/file-server-001/collectd-csv' % \
                                      (e3.get_e3_home(), run_name, thread_name)
