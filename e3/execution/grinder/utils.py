@@ -1,4 +1,14 @@
 import json
+import sys
+
+
+def load_script(script_name):
+    script = script_name
+    class_name = script
+    if '.' in script:
+        class_name = script.split('.').pop()
+    test_data_provider_class = getattr(sys.modules[script], class_name)
+    return test_data_provider_class
 
 
 def decode_json(s):
@@ -30,5 +40,5 @@ def save_json(path, json_dict):
 
 
 __all__ = [
-    "decode_json", "encode_json", "load_json", "save_json"
+    "load_script", "decode_json", "encode_json", "load_json", "save_json"
 ]

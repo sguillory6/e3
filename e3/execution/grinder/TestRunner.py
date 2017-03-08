@@ -57,6 +57,7 @@ TestScript.global_test_count = len(workload)
 # Import the parent module
 for job in workload:
     importlib.import_module(job["script"])
+    importlib.import_module(job["testDataProvider"])
 
 # Clean out the working directory
 if os.path.exists(work_dir):
@@ -91,10 +92,7 @@ def choose_job():
 def create_test_runner(job_number, job_data):
     script_logger.info("Creating test runner %s, %s" % (job_data['script'], job_data))
     script = job_data["script"]
-    class_name = script
-    if '.' in script:
-        class_name = script.split('.').pop()
-    script_exec = getattr(sys.modules[script], class_name)
+    script_exec = utils.load_script(script)
     return script_exec(job_number, job_data)
 
 

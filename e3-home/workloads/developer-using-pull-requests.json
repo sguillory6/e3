@@ -1,6 +1,7 @@
 [
   {
     "script": "bitbucket.persona.DeveloperUsingPullRequests",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "DeveloperUsingPullRequests",
     "scale": 1,
     "weight": 1

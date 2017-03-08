@@ -1,18 +1,21 @@
 [
   {
     "script": "bitbucket.persona.SshBuildAgent",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "SshBuildAgent",
     "scale": 1,
     "weight": 0.7
   },
   {
     "script": "persona.HttpBuildAgent",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "HttpBuildAgent",
     "scale": 1,
     "weight": 0.25
   },
   {
     "script": "persona.DeveloperUsingPullRequests",
+    "testDataProvider": "bitbucket.TestDataProvider",
     "description": "DeveloperUsingPullRequests",
     "scale": 1,
     "weight": 0.05

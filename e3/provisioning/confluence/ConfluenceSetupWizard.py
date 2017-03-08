@@ -231,7 +231,7 @@ class ConfluenceSecuritySettingsPage(PageObject):
                 self._confluence_instance,
                 self._response, self._path,
                 self._forms,
-                '/confluence/admin/editspacesconfig.action#features')
+                'admin/editsecurityconfig.action')
             next_page_response = web_sudo_page.fill_admin_password()
             print "Trying to login with websudo => Done"
             return ConfluenceFurtherSettingsPage(self._confluence_instance, response=next_page_response)
@@ -270,5 +270,5 @@ if __name__ == '__main__':
     security_settings_page = further_settings_page.login_web_sudo().enable_xml_rpc().submit()
     print "--------------------Confluence Security Settings------------------------"
     security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance).visit()
-    security_settings_page.login_web_sudo().submit()
+    security_settings_page.disable_web_sudo().submit()
     disable_plugin(confluence_instance.base_url, "'com.atlassian.confluence.plugins.confluence-onboarding'")

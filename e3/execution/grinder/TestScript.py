@@ -12,8 +12,7 @@ from org.slf4j import LoggerFactory
 
 from ProcessRunner import ProcessRunner
 from Tools import *
-from bitbucket.TestDataProvider import TestDataProvider
-from utils import encode_json, decode_json
+from utils import encode_json, decode_json, load_script
 
 connectionDefaults = HTTPPluginControl.getConnectionDefaults()
 connectionDefaults.useContentEncoding = True
@@ -88,7 +87,7 @@ class TestScript(object):
         self.args = args
         self.root = System.getProperty("root")
         self.test = Test(number, args["description"])
-        self.test_data = TestDataProvider()
+        self.test_data = self._create_test_data_provider(args["testDataProvider"])
         self.info("Test %d: \"%s\"" % (number, args["description"]))
         grinder.getStatistics().delayReports = 1
         duration = datetime.datetime.now() - start_time
@@ -104,6 +103,17 @@ class TestScript(object):
         # Process runner object for Git requests (if any) executed by test script subclasses
         self.runner = ProcessRunner()
         self.test.record(self.runner)
+
+    def _create_test_data_provider(self, script_name):
+        """
+        Test data provider either by passed by environment variable -DtestDataProvider or from experiment file.
+        This allows E3 to to use a different test data provider for each experiment or product.
+        :param script_name:
+        :return:
+        """
+        self.logger.info("Creating test data provider %s" % script_name)
+        test_data_provider_class = load_script(script_name)
+        return test_data_provider_class()
 
     def rest(self, method, url, data=None):
         """
