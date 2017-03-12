@@ -5,8 +5,7 @@ Jinja2==2.8
 progressbar==2.3
 python-dateutil==2.5.3
 pyyaml==3.12
-requests==2.11.1
 rrdtool==0.1.6
 spur==0.3.19
 mechanize==0.2.5
-request=2.13.0
+requests==2.13.0

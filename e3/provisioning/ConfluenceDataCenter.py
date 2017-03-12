@@ -20,7 +20,7 @@ class ConfluenceDataCenter(Template):
             "CloudFormation": {
                 'AssociatePublicIpAddress': str(e3_properties['public']).lower(),
                 'CatalinaOpts': '-Dcom.sun.management.jmxremote.port=3333 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dconfluence.hazelcast.jmx.enable=true -Dconfluence.hibernate.jmx.enable=true',
-                'ConfluenceVersion': '6.1.0-m19',
+                'ConfluenceVersion': '6.1.0-rc1',
                 'ClusterNodeInstanceType': 'c3.xlarge',
                 "CidrBlock": '0.0.0.0/0',
                 'DBMasterUserPassword': 'conf3last1c',
