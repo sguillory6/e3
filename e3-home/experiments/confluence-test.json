@@ -9,10 +9,12 @@
         "version": "4.11.0",
         "snapshot": "e3-small",
         "template": "ConfluenceDataCenter",
-        "properties": ["db.schema.lock.maxWait=600"],
+        "properties": ["db.schema.lock.maxWait=600",
+          "data-dir=resources/confluence",
+          "conf_license=<license_string_here>"],
         "parameters": {
-          "ClusterNodeMin": "2",
-          "ClusterNodeMax": "2"
+          "ClusterNodeMin": "1",
+          "ClusterNodeMax": "1"
         }
       },
       "worker": {

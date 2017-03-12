@@ -19,7 +19,7 @@ class ConfluenceDataCenter(Template):
             "Template": template,
             "CloudFormation": {
                 'AssociatePublicIpAddress': str(e3_properties['public']).lower(),
-                'CatalinaOpts': '-Dcom.sun.management.jmxremote.port=3333 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false',
+                'CatalinaOpts': '-Dcom.sun.management.jmxremote.port=3333 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dconfluence.hazelcast.jmx.enable=true -Dconfluence.hibernate.jmx.enable=true',
                 'ConfluenceVersion': '6.1.0-m19',
                 'ClusterNodeInstanceType': 'c3.xlarge',
                 "CidrBlock": '0.0.0.0/0',
@@ -61,7 +61,6 @@ class ConfluenceDataCenter(Template):
         print "Synchrony start successfully - Confluence stack is fully start"
 
     def _setup_confluence(self, base_url="http://localhost:8080/confluence"):
-        root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
         confluence_instance = ConfluenceInstance(base_url, properties=self._e3_properties['properties'])
         select_bundles = BundleSelectionPage(confluence_instance).visit()
         license_page = select_bundles.go_next()
@@ -80,9 +79,11 @@ class ConfluenceDataCenter(Template):
         print "--------------------Confluence Security Settings------------------------"
         security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance).visit()
         security_settings_page.disable_web_sudo().submit()
+        print "--------------------Disabling WebSudo-----------------------------------"
         disable_plugin(confluence_instance.base_url, "com.atlassian.confluence.plugins.confluence-onboarding")
+        print "--------------------Disabling Onboarding--------------------------------"
         (confluence_xmlrpc, rpc_token) = authenticate_rpc(confluence_instance.base_url)
-        filepath = os.path.join(root, "e3-home", "space-import.xml.zip")
+        filepath = os.path.join(e3.get_e3_home(), confluence_instance.properties['data-dir'], "space-import.xml.zip")
         imported = import_space(confluence_xmlrpc, rpc_token, filepath)
         print "    Import successful? %r" % imported
         print "    Has space WOT: %r" % has_space(confluence_xmlrpc, rpc_token, "WOT")
