@@ -18,12 +18,10 @@ class Commentor(TestScript):
     def __init__(self, number, args):
         super(Commentor, self).__init__(number, args)
         self.logger = LoggerFactory.getLogger("atlassian")
-        self._commented_page_list = [
-            "/display/WOT/Adding+a+comment+to+a+page",
-            "/display/WOT/Adding+comment+for+a+page",
-            "/display/WOT/Updating+your+user+profile",
-            "/display/WOT/Using+the+Dashboard"
-        ]
+        csv_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../resources/pagesToComment.csv"))
+        with open(csv_file_path) as csv_file:
+            comment_pages = csv.DictReader(csv_file)
+            self._commented_page_list = list(comment_pages)
 
         csv_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../resources/comments.csv"))
         with open(csv_file_path) as csv_file:
@@ -42,7 +40,7 @@ class Commentor(TestScript):
 
         random_page_index = random.randint(0, len(self._commented_page_list) - 1)
         random_comment_index = random.randint(0, len(self._comments) - 1)
-        page = self._commented_page_list[random_page_index]
+        page = self._commented_page_list[random_page_index]["page"]
         comment = self._comments[random_comment_index]
         grinder.logger.info("Page [%s] and comment %s" % (page, random_comment_index))
 
