@@ -5,6 +5,11 @@ import sys
 import traceback
 
 
+def _sanitize_rrd_friendly(sanitize_str):
+    if sanitize_str:
+        return sanitize_str.replace('-', '_').replace('.', '_')
+    return sanitize_str
+
 class Graph:
     def __init__(self):
         pass
@@ -19,9 +24,13 @@ class Graph:
         for graph in graph_config:
             for data_file in graph.keys():
                 for graph_data in graph[data_file]:
-                    data_source = graph_data['ds']
-                    multiplier = graph_data['multi']
+                    data_disk_file = os.path.join(data_dir, data_file + ".rrd").replace(':', '\\:')
 
+                    # need to replace all - and . to _
+                    data_source = _sanitize_rrd_friendly(graph_data['ds'])
+                    data_file = _sanitize_rrd_friendly(data_file)
+
+                    multiplier = graph_data['multi']
                     data_description = graph_data['desc']
                     line_color = graph_data['line']
                     area_color = graph_data['area'] if graph_data['area'] else ''
@@ -29,7 +38,6 @@ class Graph:
                     data_names.append("%s_%s" % (data_file, data_source))
                     data_description = data_description.ljust(15)
 
-                    data_disk_file = os.path.join(data_dir, data_file + ".rrd").replace(':', '\\:')
                     definition_def.append('DEF:avg_%s_%s_raw=%s:%s:AVERAGE' %
                                           (data_file, data_source, data_disk_file, data_source))
 
@@ -38,7 +46,7 @@ class Graph:
 
                     definition_area.append("AREA:area_%s_%s%s" %
                                            (data_file, data_source, area_color))
-
+                    
                     definition_lines.append('LINE1:area_%s_%s%s:%s' %
                                             (data_file, data_source, line_color, data_description))
 
