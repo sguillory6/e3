@@ -12,6 +12,7 @@ if __name__ == '__main__':
     sys.path.append(os.path.realpath(os.path.join(__file__, '..', '..', '..')))
 
 from analysis.rrdtool.types.BitbucketJMX import BitbucketJmx
+from analysis.rrdtool.types.ConfluenceJMX import ConfluenceJmx
 from analysis.rrdtool.types.Cpu import Cpu
 from analysis.rrdtool.types.Disk import Disk
 from analysis.rrdtool.types.GenericJmx import GenericJmx
@@ -152,6 +153,9 @@ def graph_node(analysis_root, node, run, stage_end, stage_logical_name, stage_st
         # Bitbucket JMX graphs
         bitbucket_jmx_grapher = BitbucketJmx(graph_directory, rrd_data_directory)
         bitbucket_jmx_grapher.render(node_name, stage_start, stage_end)
+
+        confluence_jmx_grapher = ConfluenceJmx(graph_directory, rrd_data_directory)
+        confluence_jmx_grapher.render(node_name, stage_start, stage_end)
 
         # Threadpool JMX graphs
         threadpool_jmx_grapher = ThreadpoolJmx(graph_directory, rrd_data_directory)
