@@ -6,6 +6,7 @@ from mechanize import urlopen, urljoin
 from common import Utils
 from common.E3 import e3
 from confluence.ConfluenceSetupWizard import ConfluenceSecuritySettingsPage
+from confluence.ConfluenceSpaceUtils import *
 from confluence.UPMHelper import disable_plugin
 from provisioning.Template import Template
 from provisioning.confluence.ConfluenceSetupWizard import BundleSelectionPage, ConfluenceInstance
@@ -18,8 +19,8 @@ class ConfluenceDataCenter(Template):
             "Template": template,
             "CloudFormation": {
                 'AssociatePublicIpAddress': str(e3_properties['public']).lower(),
-                'CatalinaOpts': '-Dcom.sun.management.jmxremote.port=3333 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false',
-                'ConfluenceVersion': '6.1.0-beta6',
+                'CatalinaOpts': '-Dcom.sun.management.jmxremote.port=3333 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dconfluence.hazelcast.jmx.enable=true -Dconfluence.hibernate.jmx.enable=true',
+                'ConfluenceVersion': '6.1.0-rc1',
                 'ClusterNodeInstanceType': 'c3.xlarge',
                 "CidrBlock": '0.0.0.0/0',
                 'DBMasterUserPassword': 'conf3last1c',
@@ -77,9 +78,16 @@ class ConfluenceDataCenter(Template):
         further_settings_page.login_web_sudo().enable_xml_rpc().submit()
         print "--------------------Confluence Security Settings------------------------"
         security_settings_page = ConfluenceSecuritySettingsPage(confluence_instance).visit()
-        security_settings_page.login_web_sudo().submit()
         security_settings_page.disable_web_sudo().submit()
+        print "--------------------Disabling WebSudo-----------------------------------"
         disable_plugin(confluence_instance.base_url, "com.atlassian.confluence.plugins.confluence-onboarding")
+        print "--------------------Disabling Onboarding--------------------------------"
+        (confluence_xmlrpc, rpc_token) = authenticate_rpc(confluence_instance.base_url)
+        filepath = os.path.join(e3.get_e3_home(), confluence_instance.properties['data-dir'], "space-import.xml.zip")
+        imported = import_space(confluence_xmlrpc, rpc_token, filepath)
+        print "    Import successful? %r" % imported
+        print "    Has space WOT: %r" % has_space(confluence_xmlrpc, rpc_token, "WOT")
+        print "--------------------Importing space-------------------------------------"
 
     def before_provision(self):
         # should check if we have a key pair already
