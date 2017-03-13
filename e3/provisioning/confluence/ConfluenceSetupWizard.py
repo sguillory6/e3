@@ -280,7 +280,7 @@ if __name__ == '__main__':
     disable_plugin(confluence_instance.base_url, "'com.atlassian.confluence.plugins.confluence-onboarding'")
     print "--------------------Disabling Onboarding--------------------------------"
     (confluence_xmlrpc, rpc_token) = authenticate_rpc(confluence_instance.base_url)
-    filepath = os.path.join(root, "e3-home", "space-import.xml.zip")
+    filepath = os.path.join(root, "e3-home", "resources/confluence/space-import.xml.zip")
     imported = import_space(confluence_xmlrpc, rpc_token, filepath)
     print "    Import successful? %r" % imported
     print "    Has space WOT: %r" % has_space(confluence_xmlrpc, rpc_token, "WOT")
