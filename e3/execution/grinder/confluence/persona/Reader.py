@@ -1,4 +1,4 @@
-from confluence.common.helper.ConfluenceUserCreator import create_new_user
+from confluence.common.helper.ConfluenceUserCreator import create_user
 from confluence.common.helper.Authentication import login, logout
 from confluence.common.helper.ResourceUtils import *
 from confluence.common.wrapper.User import User
@@ -23,7 +23,8 @@ class Reader(TestScript):
         self._oc_pages = get_oc_pages()
 
     def __call__(self, *args, **kwargs):
-        self.create_new_reader(self.test_data.base_url)
+        user_name = create_user(self.test_data.base_url, grinder, "reader")
+        self._current_user = User(user_name, user_name)
 
         if self._current_user is None:
             self.report_success(False)
@@ -60,20 +61,6 @@ class Reader(TestScript):
         logout(self)
 
         self.report_success(True)
-
-    def create_new_reader(self, base_url):
-        # get run stats
-        agent = grinder.getAgentNumber()
-        process = grinder.getProcessNumber()
-        thread = grinder.getThreadNumber()
-        run = grinder.getRunNumber()
-
-        user_name = "reader%d%d%d%d" % (agent, process, thread, run)
-
-        # create unique user for reader persona
-        print "   --Creating user: %s" % user_name
-        create_new_user(base_url, user_name, "reader-group")
-        self._current_user = User(user_name, user_name)
 
     def visit_dashboard(self):
         self.http("GET", "/dashboard.action#all-updates")
