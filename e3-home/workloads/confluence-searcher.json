@@ -1,0 +1,9 @@
+[
+  {
+    "script": "confluence.persona.Searcher",
+    "testDataProvider": "confluence.TestDataProvider",
+    "description": "Confluence reader",
+    "scale": 1.0,
+    "weight": 1
+  }
+]
