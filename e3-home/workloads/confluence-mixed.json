@@ -1,0 +1,23 @@
+[
+  {
+    "script": "confluence.persona.Commentor",
+    "testDataProvider": "confluence.TestDataProvider",
+    "description": "Confluence commenter",
+    "scale": 1.0,
+    "weight": 0.4
+  },
+  {
+    "script": "confluence.persona.Reader",
+    "testDataProvider": "confluence.TestDataProvider",
+    "description": "Confluence reader",
+    "scale": 1.0,
+    "weight": 0.5
+  },
+  {
+    "script": "confluence.persona.Searcher",
+    "testDataProvider": "confluence.TestDataProvider",
+    "description": "Confluence searcher",
+    "scale": 1.0,
+    "weight": 0.1
+  }
+]

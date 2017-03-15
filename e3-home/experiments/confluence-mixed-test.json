@@ -1,0 +1,33 @@
+{
+  "duration": 300000,
+  "workload": "confluence-mixed",
+  "threads": [
+    {
+      "name": "test-thread",
+      "instance": {
+        "name": "1-node",
+        "version": "4.11.0",
+        "snapshot": "e3-small",
+        "template": "ConfluenceDataCenter",
+        "properties": ["data-dir=resources/confluence",
+          "conf_license=<license_string_here>"],
+        "parameters": {
+          "ClusterNodeMin": "1",
+          "ClusterNodeMax": "1"
+        }
+      },
+      "worker": {
+        "name": "1-node-worker-cluster",
+        "template": "WorkerCluster",
+        "parameters": {
+          "ClusterSize": "1"
+        }
+      },
+      "stages": [
+        {
+          "clients": 120
+        }
+      ]
+    }
+  ]
+}

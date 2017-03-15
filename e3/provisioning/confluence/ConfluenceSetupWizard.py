@@ -188,7 +188,6 @@ class ConfluenceFurtherSettingsPage(PageObject):
         """
         print "Check if we need to login with websudo or not"
         str_url = self._response.geturl()
-        print str_url
         if "authenticate.action" in str_url:
             print "Trying to login with websudo"
             web_sudo_page = WebSudoPage(
@@ -283,5 +282,4 @@ if __name__ == '__main__':
     filepath = os.path.join(root, "e3-home", "resources/confluence/space-import.xml.zip")
     imported = import_space(confluence_xmlrpc, rpc_token, filepath)
     print "    Import successful? %r" % imported
-    print "    Has space WOT: %r" % has_space(confluence_xmlrpc, rpc_token, "WOT")
     print "--------------------Importing space-------------------------------------"
