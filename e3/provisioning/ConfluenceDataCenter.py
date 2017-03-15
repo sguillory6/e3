@@ -86,7 +86,6 @@ class ConfluenceDataCenter(Template):
         filepath = os.path.join(e3.get_e3_home(), confluence_instance.properties['data-dir'], "space-import.xml.zip")
         imported = import_space(confluence_xmlrpc, rpc_token, filepath)
         print "    Import successful? %r" % imported
-        print "    Has space WOT: %r" % has_space(confluence_xmlrpc, rpc_token, "WOT")
         print "--------------------Importing space-------------------------------------"
 
     def before_provision(self):

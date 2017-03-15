@@ -1,0 +1,7 @@
+rss_type,content_type
+atom,page
+atom,comment
+atom,blogpost
+rss2,page
+rss2,comment
+rss2,blogpost
