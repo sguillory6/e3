@@ -9,7 +9,8 @@
         "version": "4.11.0",
         "snapshot": "e3-small",
         "template": "ConfluenceDataCenter",
-        "properties": [],
+        "properties": ["data-dir=resources/confluence",
+          "conf_license=<license_string_here>"],
         "parameters": {
           "ClusterNodeMin": "1",
           "ClusterNodeMax": "1"

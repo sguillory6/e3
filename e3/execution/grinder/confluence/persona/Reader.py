@@ -1,3 +1,4 @@
+from confluence.common.htmlparser.MetaAttributeParser import MetaAttributeParser
 from confluence.common.helper.ConfluenceUserCreator import create_user
 from confluence.common.helper.Authentication import login, logout
 from confluence.common.helper.ResourceUtils import *
@@ -8,6 +9,7 @@ from TestScript import TestScript
 from net.grinder.script.Grinder import grinder
 from org.slf4j import LoggerFactory
 
+import re
 
 class Reader(TestScript):
     def __init__(self, number, args):
@@ -56,7 +58,7 @@ class Reader(TestScript):
 
         # view OC attachment (OC plugin should be enabled)
         item_num = run_num % len(self._oc_pages)
-        self.view_office_connector_page(self._oc_pages[item_num])
+        self.view_office_connector_page(self._space_key, self._oc_pages[item_num])
 
         logout(self)
 
@@ -66,7 +68,7 @@ class Reader(TestScript):
         self.http("GET", "/dashboard.action#all-updates")
 
     def view_page_by_title(self, page_name, space_key):
-        self.http("GET", "/display/%s/%s" % (space_key, url_encode(page_name)), {"showComments": "true"})
+        return self.http("GET", "/display/%s/%s" % (space_key, url_encode(page_name)), {"showComments": "true"})
 
     def view_space_action(self, action, space_key):
         self.http("GET", "/%s" % action, {"key": space_key})
@@ -81,15 +83,26 @@ class Reader(TestScript):
                                                           "rssType": rss_type,
                                                           "types": content_type})
 
-    def view_office_connector_page(self, params):
-        attachment_id = url_encode(params["attachment_id"])
-        file_name = url_encode(params["file_name"])
-        page_id = url_encode(params["page_id"])
+    def view_office_connector_page(self, space_key, params):
+        page_name = params["page_name"]
+        file_name = params["file_name"]
+
+        # get page id
+        page_response = self.view_page_by_title(page_name, space_key)
+        page_id_meta_parser = MetaAttributeParser('ajs-page-id')
+        page_id_meta_parser.feed(page_response)
+        page_id_meta_parser.close()
+        page_id = page_id_meta_parser.meta_content
 
         if ".doc" in file_name or ".xls" in file_name:
-            self.http("GET", "/pages/worddav/preview.action", {"pageId": page_id,
-                                                               "fileName": file_name})
+            self.http("GET", "/pages/worddav/preview.action", {"pageId": url_encode(page_id),
+                                                               "fileName": url_encode(file_name)})
         else:
-            self.http("GET", "/plugins/servlet/pptslide", {"attachmentId": attachment_id,
-                                                           "attachment": file_name,
-                                                           "pageId": page_id})
+            # get attachment id
+            pattern = 'data-attachment="%s" data-attachment-id="([0-9]+)"' % file_name
+            match = re.search(pattern, page_response)
+            attachment_id = match.group(1)
+
+            self.http("GET", "/plugins/servlet/pptslide", {"attachmentId": url_encode(attachment_id),
+                                                           "attachment": url_encode(file_name),
+                                                           "pageId": url_encode(page_id)})
