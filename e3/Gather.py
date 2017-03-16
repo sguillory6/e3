@@ -68,6 +68,7 @@ class Gather:
             if not os.path.exists(collectd_rrd_directory):
                 os.makedirs(collectd_rrd_directory)
             Utils.rsync(node, key_file, '/var/atlassian/application-data/bitbucket/log', directory, upload=False)
+            Utils.rsync(node, key_file, '/var/atlassian/application-data/confluence/logs', directory, upload=False)
             Utils.rsync(node, key_file, '/var/lib/collectd/csv/', collectd_cvs_directory, upload=False)
             Utils.rsync(node, key_file, '/var/lib/collectd/rrd/', collectd_rrd_directory, upload=False)
             number += 1
