@@ -1,8 +1,8 @@
 [
   {
-    "script": "confluence.persona.Commentor",
+    "script": "confluence.persona.Editor",
     "testDataProvider": "confluence.TestDataProvider",
-    "description": "Confluence commentor",
+    "description": "Confluence editor",
     "scale": 1.0,
     "weight": 1
   }

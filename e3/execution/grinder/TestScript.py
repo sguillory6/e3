@@ -291,14 +291,14 @@ class TestScript(object):
                         try:
                             result.append(NVPair(k, h[k]))
                         except Exception as ex:
-                            grinder.logger.error("Key %s could not be added due exception %s" % (k, ex))
+                            grinder.logger.error("Key '%s' could not be added due exception %s" % (k, ex))
                             raise
             elif isinstance(data, dict):
                 for k in data.keys():
                     try:
                         result.append(NVPair(k, data[k]))
                     except Exception as ex:
-                        grinder.logger.error("Key %s could not be added due exception %s" % (k, ex))
+                        grinder.logger.error("Key '%s' could not be added due exception %s" % (k, ex))
                         raise
             else:
                 raise TypeError("The data is not a list or a dict")
