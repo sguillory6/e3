@@ -1,4 +1,3 @@
-from confluence.common.htmlparser.MetaAttributeParser import MetaAttributeParser
 from confluence.common.helper.ConfluenceUserCreator import create_user
 from confluence.common.helper.Authentication import login, logout
 from confluence.common.helper.ResourceUtils import *
@@ -39,10 +38,7 @@ class Editor(TestScript):
         item_num = run_num % len(self._pages_to_edit)
         page_response = self.view_page_by_title(self._pages_to_edit[item_num]["page"], self._space_key)
 
-        page_id_meta_parser = MetaAttributeParser('ajs-page-id')
-        page_id_meta_parser.feed(page_response)
-        page_id_meta_parser.close()
-        page_id = page_id_meta_parser.meta_content
+        page_id = get_meta_attribute(page_response, 'ajs-page-id')  # pageId
 
         # edit page
         editor_response = self.edit_page(page_id)

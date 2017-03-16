@@ -1,6 +1,5 @@
 import random
 
-from confluence.common.htmlparser.MetaAttributeParser import MetaAttributeParser
 from confluence.common.helper.ConfluenceUserCreator import create_user
 from confluence.common.helper.Authentication import login, logout
 from confluence.common.helper.ResourceUtils import *

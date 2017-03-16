@@ -2,16 +2,16 @@
   {
     "script": "confluence.persona.Commentor",
     "testDataProvider": "confluence.TestDataProvider",
-    "description": "Confluence commenter",
+    "description": "Confluence commentor",
     "scale": 1.0,
-    "weight": 0.4
+    "weight": 0.2
   },
   {
     "script": "confluence.persona.Reader",
     "testDataProvider": "confluence.TestDataProvider",
     "description": "Confluence reader",
     "scale": 1.0,
-    "weight": 0.5
+    "weight": 0.2
   },
   {
     "script": "confluence.persona.Searcher",
@@ -19,5 +19,19 @@
     "description": "Confluence searcher",
     "scale": 1.0,
     "weight": 0.1
+  },
+  {
+    "script": "confluence.persona.Creator",
+    "testDataProvider": "confluence.TestDataProvider",
+    "description": "Confluence creator",
+    "scale": 1.0,
+    "weight": 0.3
+  },
+  {
+    "script": "confluence.persona.Editor",
+    "testDataProvider": "confluence.TestDataProvider",
+    "description": "Confluence editor",
+    "scale": 1.0,
+    "weight": 0.2
   }
 ]
