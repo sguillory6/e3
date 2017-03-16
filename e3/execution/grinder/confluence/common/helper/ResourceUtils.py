@@ -1,3 +1,5 @@
+from confluence.common.htmlparser.MetaAttributeParser import MetaAttributeParser
+
 from urllib import quote_plus
 
 import os
@@ -51,9 +53,19 @@ def get_pages_to_comment():
     return get_entries_as_list("pages/pagesToComment.csv")
 
 
+def get_pages_to_edit():
+    return get_entries_as_list("pages/pagesToEdit.csv")
+
+
 def get_sample_comments():
     return get_entries_as_list("comments/comments.csv")
 
+
+def get_meta_attribute(feed_text, attribute):
+    page_id_meta_parser = MetaAttributeParser(attribute)
+    page_id_meta_parser.feed(feed_text)
+    page_id_meta_parser.close()
+    return page_id_meta_parser.meta_content
 
 def url_encode(string):
     return quote_plus(string)

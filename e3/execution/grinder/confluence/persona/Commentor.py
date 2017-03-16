@@ -1,6 +1,5 @@
 import random
 
-from confluence.common.htmlparser.MetaAttributeParser import MetaAttributeParser
 from confluence.common.helper.ConfluenceUserCreator import create_user
 from confluence.common.helper.Authentication import login, logout
 from confluence.common.helper.ResourceUtils import *
@@ -34,15 +33,8 @@ class Commentor(TestScript):
         login(self, self._current_user)
 
         page_response = self.http("GET", page)
-        page_id_meta_parser = MetaAttributeParser('ajs-page-id')
-        page_id_meta_parser.feed(page_response)
-        page_id_meta_parser.close()
-        page_id = page_id_meta_parser.meta_content
-
-        page_xsrf_token_parser = MetaAttributeParser('ajs-atl-token')
-        page_xsrf_token_parser.feed(page_response)
-        page_xsrf_token_parser.close()
-        page_xsrf_token = page_xsrf_token_parser.meta_content
+        page_id = get_meta_attribute(page_response, 'ajs-page-id')
+        page_xsrf_token = get_meta_attribute(page_response, 'ajs-atl-token')
 
         grinder.logger.info("Page xsrf token [%s]" % page_xsrf_token)
         grinder.logger.info("Page id [%s]" % page_id)
