@@ -90,7 +90,7 @@ def choose_job():
 
 
 def create_test_runner(job_number, job_data):
-    script_logger.info("Creating test runner %s, %s" % (job_data['script'], job_data))
+    grinder.getLogger().info("Creating test runner %s, %s" % (job_data['script'], job_data))
     script = job_data["script"]
     script_exec = utils.load_script(script)
     return script_exec(job_number, job_data)
@@ -106,8 +106,8 @@ class TestRunner(object):
         try:
             self.testRunner()
         except Exception as ex:
+            grinder.getLogger().error("Script '%s' failed due to exception: %s" % (type(self.testRunner), ex))
             # Ensure that if an exception is raised and NOT handled in the TestScript, we mark the test as failed
             grinder.getStatistics().getForLastTest().success = False
-            grinder.getLogger().error("Script '%s' failed due to exception: %s", type(self.testRunner), ex)
             # Re-raise the exception to grinder
             raise

@@ -6,6 +6,10 @@ import csv
 resource_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../resources"))
 
 
+def get_page_sample_text():
+    return get_entries_as_list("pages/pagesSampleData.csv")
+
+
 def get_space_key():
     space_keys = get_entries_as_list("spaces/spaceKeys.csv")
     return space_keys[0]["space_key"] if len(space_keys) > 0 else "ds"
