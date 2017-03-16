@@ -22,10 +22,8 @@ class Editor(TestScript):
         self._pages_to_edit = get_pages_to_edit()
 
     def __call__(self, *args, **kwargs):
-        # print "Base url: %s" % self.test_data.base_url
         user_name = create_user(self.test_data.base_url, grinder, "editor")
         self._current_user = User(user_name, user_name)
-        # print "User %s" % user_name
 
         if self._current_user is None:
             self.report_success(False)
