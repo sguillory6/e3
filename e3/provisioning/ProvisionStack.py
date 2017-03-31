@@ -20,7 +20,7 @@ from provisioning.WorkerCluster import WorkerCluster
 class ProvisionStack:
     """Provisions AWS stacks for use with E3"""
     def __init__(self, aws, e3_properties, template_names):
-        boto3.set_stream_logger('boto3', logging.WARN)
+        boto3.set_stream_logger('boto3', logging.DEBUG)
 
         self._available_templates = {
             "BitbucketDataCenter": BitbucketDataCenter(aws, e3_properties),
@@ -75,8 +75,9 @@ class ProvisionStack:
         k = 0
         threads = []
         instances_to_provision = \
-            map(lambda x: x['instance'], experiment['threads']) + \
             map(lambda x: x['worker'], experiment['threads'])
+            # If the key 'instance' not present, this throws exception
+            # map(lambda x: x['instance'], experiment['threads']) + \
 
         experiment['run_name'] = run_name
         flush_lock = Lock()

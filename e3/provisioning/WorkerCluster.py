@@ -41,9 +41,16 @@ class WorkerCluster(Template):
         asg_name = self.get_stack_output(self.get_stack_name(), 'AutoScalingGroupName')
         return self.public_dns_names_for_auto_scaling_group(asg_name)
 
+    # Need to DRY this with stack_public_dns_names
+    def stack_private_ip_addresses(self):
+        asg_name = self.get_stack_output(self.get_stack_name(), 'AutoScalingGroupName')
+        return self.private_ip_addresses_for_auto_scaling_group(asg_name)
+
     def wait_all_nodes_launched(self):
         dns_names = self.stack_public_dns_names()
+        # dns_names = self.stack_private_ip_addresses()
         expected_nodes = int(self._stack_config['CloudFormation']['ClusterSize'])
+        key_pair = self._stack_config['CloudFormation']['KeyName']
         while len(dns_names) != expected_nodes:
             self._log.info("Expected %d nodes launched, currently %d launched" % (expected_nodes, len(dns_names)))
             dns_names = self.stack_public_dns_names()
@@ -54,10 +61,10 @@ class WorkerCluster(Template):
             for host_name in dns_names:
                 try:
                     # Run a test SSH command on the node, if this succeeds without error then the node is ready to work.
-                    self._log.debug("Attempting to ssh -i %s/%s.pem ec2-user@%s echo" % (self._e3_properties["instances_dir"], self.get_stack_name(), host_name))
+                    self._log.debug("Attempting to ssh -i %s/%s.pem ec2-user@%s echo" % (self._e3_properties["instances_dir"], key_pair, host_name))
                     shell = spur.SshShell(hostname=host_name,
                                           username='ec2-user',
-                                          private_key_file='%s/%s.pem' % (self._e3_properties["instances_dir"], self.get_stack_name()),
+                                          private_key_file='%s/%s.pem' % (self._e3_properties["instances_dir"], key_pair),
                                           missing_host_key=spur.ssh.MissingHostKey.accept)
                     shell.run(['echo'], allow_error=True)
                 except:

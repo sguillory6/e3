@@ -144,6 +144,36 @@
             "IpProtocol" : "tcp",
             "FromPort" : "22",
             "ToPort" : "22",
+            "CidrIp" : "64.170.41.0/24"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "22",
+            "ToPort" : "22",
+            "CidrIp" : "208.8.57.0/25"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "22",
+            "ToPort" : "22",
+            "CidrIp" : "192.168.0.0/16"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "22",
+            "ToPort" : "22",
+            "CidrIp" : "10.0.0.0/8"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "22",
+            "ToPort" : "22",
+            "CidrIp" : "172.16.0.0/12"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "22",
+            "ToPort" : "22",
             "CidrIp" : { "Ref" : "CidrBlock" }
           },
           {

@@ -10,16 +10,16 @@ e3:
   # Configure AWS authentication mechanism
   # - external = call external application or script
   #
-  aws_auth_type: 'external'
+  #aws_auth_type: 'external'
   #
   # Configure the external program to use for authentication
   #
-  aws_auth_external:
-    class: 'provisioning.AtlassianAwsSecurity'
-    config:
-      script: '~/awscli-saml-auth/setawstoken.sh -r 1'
-      tokens: '~/awscli-saml-auth/aws_tokens'
-    valid_for: 3600 # in seconds
+  #aws_auth_external:
+  #  class: 'provisioning.AtlassianAwsSecurity'
+  #  config:
+  #    script: '~/awscli-saml-auth/setawstoken.sh -r 1'
+  #    tokens: '~/awscli-saml-auth/aws_tokens'
+  #  valid_for: 3600 # in seconds
   #
   # Which logging.config file to use
   #
@@ -27,12 +27,12 @@ e3:
   #
   # URL used to access the CloudFormation templates
   #
-  template_url: 'https://bitbucket.org/atlassian/atlassian-aws-deployment/raw/master/templates'
+  #template_url: 'https://bitbucket.org/atlassian/atlassian-aws-deployment/raw/master/templates'
   #
   # Folder for CloudFormation templates. If this is set, templates will be looked up locally
   # first, and if they exist, they will be used over any templates stored in `s3_bucket` or at `template_url`
   #
-  template_dir: './templates'
+  template_dir: './provisioning/templates'
   #
   # S3 bucket for CloudFormation templates
   #

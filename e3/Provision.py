@@ -2,6 +2,8 @@
 
 import logging
 import logging.config
+import os
+
 
 import click
 
@@ -35,6 +37,7 @@ from provisioning.ProvisionStack import ProvisionStack
 def command(experiment, network, password, parameters, properties, templates, snapshot, version, public, owner):
     e3.setup_logging()
     aws = Aws()
+
     if experiment:
         # ProvisionStack all the instance(s) required to run an experiment, in parallel
         if network:
@@ -61,7 +64,8 @@ def command(experiment, network, password, parameters, properties, templates, sn
             'snapshot': snapshot,
             'public': public,
             'owner': owner,
-            'version': version
+            'version': version,
+            'instances_dir': os.path.join(e3.get_e3_home(), 'instances')
         }
         ProvisionStack(aws, e3_properties, templates.split(",")).run()
     logging.info("Provisioning completed successfully")

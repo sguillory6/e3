@@ -210,6 +210,17 @@ class Template:
         public_dns_names = [instance['PublicDnsName'] for instance in instance_list]
         return public_dns_names
 
+    # Need to DRY this with public_dns_names_for_auto_scaling_group
+    def private_ip_addresses_for_auto_scaling_group(self, asg_name):
+        instances = [x['InstanceId'] for x in self._aws.auto_scaling.describe_auto_scaling_groups(
+            AutoScalingGroupNames=[asg_name])['AutoScalingGroups'][0]['Instances']]
+        reservations = [reservation['Instances'] for reservation in (
+            self._aws.ec2.describe_instances(InstanceIds=instances)['Reservations']
+        )]
+        instance_list = list(itertools.chain.from_iterable(reservations))
+        private_ip_addresses = [instance['PrivateIpAddress'] for instance in instance_list]
+        return private_ip_addresses
+
     def ssh_connection_strings_for_auto_scaling_group(self, asg_name):
         public_dns_names = self.public_dns_names_for_auto_scaling_group(asg_name)
         return ['ec2-user@' + x for x in public_dns_names]

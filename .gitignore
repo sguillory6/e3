@@ -1,7 +1,7 @@
 .DS_Store
 .idea
 *.pyc
-.ve
+.venv
 e3-home/archive
 e3-home/e3
 e3-home/runs
@@ -10,3 +10,4 @@ e3-home/keys/user_*
 e3-home/repo_cache
 *.log
 *.log1
+
